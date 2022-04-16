@@ -24,7 +24,7 @@ def train(trainer, resume_from_checkpoint=None, last_checkpoint=None):
     elif last_checkpoint is not None:
         checkpoint = last_checkpoint
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
-    # trainer.save_model()
+    trainer.save_model()
 
     metrics = train_result.metrics
 
@@ -123,6 +123,8 @@ if __name__ == '__main__':
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
         last_checkpoint = get_last_checkpoint(training_args.output_dir)
+        print('hellloowowowowowowow')
+        print(last_checkpoint is None)
         if last_checkpoint is None and len(os.listdir(training_args.output_dir)) > 0:
             raise ValueError(
                 f"Output directory ({training_args.output_dir}) already exists and is not empty. "
@@ -138,8 +140,8 @@ if __name__ == '__main__':
     if training_args.do_train:
         train(trainer, training_args.resume_from_checkpoint, last_checkpoint)
     
-    # if training_args.do_eval:
-    #     evaluate(trainer)
+    if training_args.do_eval:
+        evaluate(trainer)
 
     # if training_args.do_predict:
     #     predict(trainer, predict_dataset)

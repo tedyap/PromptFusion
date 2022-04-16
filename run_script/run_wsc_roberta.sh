@@ -25,4 +25,4 @@ python3 run.py \
   --seed 44 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --prefix
+  --prefix > log.txt

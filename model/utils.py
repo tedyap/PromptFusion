@@ -1,5 +1,8 @@
 from enum import Enum
 
+from torch import nn
+import torch
+
 from model.token_classification import (
     BertPrefixForTokenClassification,
     RobertaPrefixForTokenClassification,
@@ -139,6 +142,16 @@ def get_model(model_args, task_type: TaskType, config: AutoConfig, fix_bert: boo
             all_param += param.numel()
         total_param = all_param - bert_param
         print('***** total param is {} *****'.format(total_param))
+
+    all_param = 0
+    total_param = 0
+    for _, param in model.named_parameters():
+        total_param += param.numel()
+        if param.requires_grad == True:
+            all_param += param.numel()
+
+    print('***** tunable param is {} *****'.format(all_param))
+    print('***** total param is {} *****'.format(total_param))
     return model
 
 
@@ -251,9 +264,25 @@ def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fi
                     param.requires_grad = False
                 for _, param in model.deberta.named_parameters():
                     bert_param += param.numel()
-        all_param = 0
-        for _, param in model.named_parameters():
+    all_param = 0
+    total_param = 0
+    for _, param in model.named_parameters():
+        total_param += param.numel()
+        if param.requires_grad == True:
             all_param += param.numel()
-        total_param = all_param - bert_param
-        print('***** total param is {} *****'.format(total_param))
+    
+    print('***** tunable param is {} *****'.format(all_param))
+    print('***** total param is {} *****'.format(total_param))
     return model
+
+
+class LinearWeightedSum(nn.Module):
+    def __init__(self, n_inputs):
+        super(LinearWeightedSum, self).__init__()
+        self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
+
+    def forward(self, input):
+        res = torch.zeros(input[0].shape).to(input[0].device)
+        for emb_idx, emb in enumerate(input):
+            res += emb * self.weights[emb_idx]
+        return res

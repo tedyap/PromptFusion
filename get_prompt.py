@@ -21,8 +21,7 @@ from tasks.superglue.dataset import SuperGlueDataset
 from training.trainer_base import BaseTrainer
 from training.trainer_exp import ExponentialTrainer
 
-from run import evaluate
-
+from tasks.utils import *
 
 os.environ["WANDB_DISABLED"] = "true"
 

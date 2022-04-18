@@ -450,7 +450,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         self.dropout = torch.nn.Dropout(config.hidden_dropout_prob)
         self.classifier = torch.nn.Linear(config.hidden_size, config.num_labels)
         self.init_weights()
-        self.prompt_len = config.prompt_len
+        # self.prompt_len = config.prompt_len
 
         for param in self.roberta.parameters():
             param.requires_grad = False

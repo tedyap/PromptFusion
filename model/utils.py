@@ -6,6 +6,7 @@ import torch
 from model.token_classification import (
     BertPrefixForTokenClassification,
     RobertaPrefixForTokenClassification,
+    RobertaPrefixFusionForTokenClassification,
     DebertaPrefixForTokenClassification,
     DebertaV2PrefixForTokenClassification
 )
@@ -22,12 +23,14 @@ from model.sequence_classification import (
 from model.question_answering import (
     BertPrefixForQuestionAnswering,
     RobertaPrefixModelForQuestionAnswering,
+    RobertaPrefixFusionModelForQuestionAnswering,
     DebertaPrefixModelForQuestionAnswering
 )
 
 from model.multiple_choice import (
     BertPrefixForMultipleChoice,
     RobertaPrefixForMultipleChoice,
+    RobertaPrefixFusionForMultipleChoice,
     DebertaPrefixForMultipleChoice,
     BertPromptForMultipleChoice,
     RobertaPromptForMultipleChoice

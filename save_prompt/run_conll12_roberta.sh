@@ -8,7 +8,7 @@ dropout=0.1
 psl=64
 epoch=45
 
-python3 run.py \
+python3 get_prompt.py \
   --model_name_or_path roberta-large \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \

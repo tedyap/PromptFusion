@@ -8,7 +8,7 @@ dropout=0.1
 psl=224
 epoch=15
 
-python3 run.py \
+python3 get_prompt.py \
   --model_name_or_path roberta-large \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
@@ -21,7 +21,6 @@ python3 run.py \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
   --output_dir checkpoints/$DATASET_NAME/ \
-  --overwrite_output_dir \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \

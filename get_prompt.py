@@ -90,4 +90,4 @@ if __name__ == '__main__':
     with torch.no_grad():
         past_key_values = list(trainer.model.get_prompt(4))
 
-    torch.save(past_key_values[0], training_args.output_dir + '.pt')
+    torch.save(past_key_values[0], data_args.dataset_name + '.pt')

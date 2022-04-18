@@ -107,7 +107,13 @@ if __name__ == '__main__':
 
     last_checkpoint = get_last_checkpoint(training_args.output_dir)
 
-    # evaluate(trainer)
+    # load trained prompts from checkpoints dir
+
+    #
+
+
+
+
     import torch
     
     with torch.no_grad():

@@ -6,6 +6,7 @@ import os
 import random
 import sys
 
+import torch
 import transformers
 from transformers import set_seed, Trainer
 from transformers.trainer_utils import get_last_checkpoint
@@ -27,66 +28,11 @@ os.environ["WANDB_DISABLED"] = "true"
 
 logger = logging.getLogger(__name__)
 
-def get_trainer(args):
-    model_args, data_args, training_args, _ = args
-
-    log_level = training_args.get_process_log_level()
-    logger.setLevel(log_level)
-
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_args.model_name_or_path,
-        use_fast=model_args.use_fast_tokenizer,
-        revision=model_args.model_revision,
-    )
-
-    dataset = SuperGlueDataset(tokenizer, data_args, training_args)
-
-    if training_args.do_train:
-        for index in random.sample(range(len(dataset.train_dataset)), 3):
-            logger.info(f"Sample {index} of the training set: {dataset.train_dataset[index]}.")
-
-    if not dataset.multiple_choice:
-        config = AutoConfig.from_pretrained(
-            model_args.model_name_or_path,
-            num_labels=dataset.num_labels,
-            label2id=dataset.label2id,
-            id2label=dataset.id2label,
-            finetuning_task=data_args.dataset_name,
-            revision=model_args.model_revision,
-        )
-    else:
-        config = AutoConfig.from_pretrained(
-            model_args.model_name_or_path,
-            num_labels=dataset.num_labels,
-            finetuning_task=data_args.dataset_name,
-            revision=model_args.model_revision,
-        )
-
-    if not dataset.multiple_choice:
-        model = get_model(model_args, TaskType.SEQUENCE_CLASSIFICATION, config)
-    else:
-        model = get_model(model_args, TaskType.MULTIPLE_CHOICE, config, fix_bert=True)
-
-    # Initialize our Trainer
-    trainer = BaseTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=dataset.train_dataset if training_args.do_train else None,
-        eval_dataset=dataset.eval_dataset if training_args.do_eval else None,
-        compute_metrics=dataset.compute_metrics,
-        tokenizer=tokenizer,
-        data_collator=dataset.data_collator,
-        test_key=dataset.test_key
-    )
-
-    return trainer, model
-
-
 if __name__ == '__main__':
 
     args = get_args()
 
-    model_args, data_args, training_args, qa_args = args
+    _, data_args, training_args, _ = args
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -101,22 +47,47 @@ if __name__ == '__main__':
     transformers.utils.logging.enable_default_handler()
     transformers.utils.logging.enable_explicit_format()
 
+    # Log on each process the small summary:
+    logger.warning(
+        f"Process rank: {training_args.local_rank}, device: {training_args.device}, n_gpu: {training_args.n_gpu}"
+        + f"distributed training: {bool(training_args.local_rank != -1)}, 16-bits training: {training_args.fp16}"
+    )
+    logger.info(f"Training/evaluation parameters {training_args}")
+
+    if not os.path.isdir("checkpoints") or not os.path.exists("checkpoints"):
+        os.mkdir("checkpoints")
+
+    if data_args.task_name.lower() == "superglue":
+        assert data_args.dataset_name.lower() in SUPERGLUE_DATASETS
+        from tasks.superglue.get_trainer import get_trainer
+
+    elif data_args.task_name.lower() == "glue":
+        assert data_args.dataset_name.lower() in GLUE_DATASETS
+        from tasks.glue.get_trainer import get_trainer
+
+    elif data_args.task_name.lower() == "ner":
+        assert data_args.dataset_name.lower() in NER_DATASETS
+        from tasks.ner.get_trainer import get_trainer
+
+    elif data_args.task_name.lower() == "srl":
+        assert data_args.dataset_name.lower() in SRL_DATASETS
+        from tasks.srl.get_trainer import get_trainer
+
+    elif data_args.task_name.lower() == "qa":
+        assert data_args.dataset_name.lower() in QA_DATASETS
+        from tasks.qa.get_trainer import get_trainer
+
+    else:
+        raise NotImplementedError(
+            'Task {} is not implemented. Please choose a task from: {}'.format(data_args.task_name, ", ".join(TASKS)))
+
     set_seed(training_args.seed)
 
-    trainer, model = get_trainer(args)
+    trainer, predict_dataset = get_trainer(args)
 
     last_checkpoint = get_last_checkpoint(training_args.output_dir)
 
-    # load trained prompts from checkpoints dir
-
-    #
-
-
-
-
-    import torch
-    
     with torch.no_grad():
         past_key_values = list(trainer.model.get_prompt(4))
-    ws = LinearWeightedSum(2).to('cuda:0')
-    res = ws([past_key_values[0],past_key_values[0]])
+
+    torch.save(past_key_values[0], training_args.output_dir + '.pt')

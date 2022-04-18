@@ -9,7 +9,7 @@ psl=16
 epoch=30
 
 python3 get_prompt.py \
-  --model_name_or_path roberta-large \
+  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \

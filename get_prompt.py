@@ -1,5 +1,6 @@
 from arguments import get_args
 
+pytorch_model.bin
 import datasets
 import logging
 import os
@@ -84,9 +85,7 @@ if __name__ == '__main__':
 
     trainer, predict_dataset = get_trainer(args)
 
-    last_checkpoint = get_last_checkpoint(training_args.output_dir)
-
     with torch.no_grad():
         past_key_values = list(trainer.model.get_prompt(4))
 
-    torch.save(past_key_values[0], data_args.dataset_name + '.pt')
+    torch.save(past_key_values[0], 'prompts/' + data_args.dataset_name + '.pt')

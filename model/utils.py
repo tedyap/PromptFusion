@@ -108,7 +108,7 @@ AUTO_MODELS = {
 
 
 def get_model(model_args, task_type: TaskType, config: AutoConfig, fix_bert: bool = False):
-    if model.args.fusion:
+    if model_args.fusion:
         config.hidden_dropout_prob = model_args.hidden_dropout_prob
         config.pre_seq_len = model_args.pre_seq_len
         config.prefix_projection = model_args.prefix_projection

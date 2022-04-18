@@ -122,6 +122,14 @@ class ModelArguments:
             "with private models)."
         },
     )
+
+    fusion: bool = field(
+        default=False,
+        metadata={
+            "help": "Will use fusion during training"
+        }
+    )
+
     prefix: bool = field(
         default=False,
         metadata={

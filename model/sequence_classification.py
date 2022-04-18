@@ -462,7 +462,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(self.prompt_len)
+        # self.weighted_sum = LinearWeightedSum(self.prompt_len)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -505,8 +505,8 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         batch_size = input_ids.shape[0]
-        # past_key_values = self.get_prompt(batch_size=batch_size)
-        past_key_values = self.weighted_sum(prompt_list)
+        past_key_values = self.get_prompt(batch_size=batch_size)
+        # past_key_values = self.weighted_sum(prompt_list)
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

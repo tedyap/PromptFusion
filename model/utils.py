@@ -14,6 +14,7 @@ from model.sequence_classification import (
     BertPrefixForSequenceClassification,
     BertPromptForSequenceClassification,
     RobertaPrefixForSequenceClassification,
+    RobertaPrefixFusionForSequenceClassification,
     RobertaPromptForSequenceClassification,
     DebertaPrefixForSequenceClassification
 )

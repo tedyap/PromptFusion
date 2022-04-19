@@ -56,6 +56,8 @@ def get_trainer(args):
         model = get_model(model_args, TaskType.MULTIPLE_CHOICE, config, fix_bert=True)
 
     # Initialize our Trainer
+    print(len(dataset.train_dataset))
+
     trainer = BaseTrainer(
         model=model,
         args=training_args,

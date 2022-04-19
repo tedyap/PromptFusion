@@ -56,7 +56,8 @@ def get_trainer(args):
         model = get_model(model_args, TaskType.MULTIPLE_CHOICE, config, fix_bert=True)
 
     # Initialize our Trainer
-    print(len(dataset.train_dataset))
+    prompts = Dataset.from_dict({"ids": list(range(len(dataset.train_dataset)))})
+    dataset.train_dataset = concatenate_datasets([dataset.train_dataset, prompts], axis=1)
 
     trainer = BaseTrainer(
         model=model,

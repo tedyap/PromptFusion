@@ -27,3 +27,13 @@ USE_FAST = {
     'gpt2': True,
     'deberta-v2': False,
 }
+
+
+def get_prompts():
+    prompt_file_paths = os.listdir('prompts')
+
+    prompts = []
+    for file_path in prompt_file_paths:
+        prompts.append(torch.load('prompts' + file_path))
+
+    return prompts

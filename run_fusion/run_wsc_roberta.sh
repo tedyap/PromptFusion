@@ -1,15 +1,15 @@
 export TASK_NAME=superglue
-export DATASET_NAME=copa
+export DATASET_NAME=wsc
 export CUDA_VISIBLE_DEVICES=0
 
 bs=16
-lr=9e-3
+lr=1e-2
 dropout=0.1
 psl=8
-epoch=120
+epoch=10
 
-python3 run.py \
-  --model_name_or_path roberta-large \
+python3 train_fusion.py \
+  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -19,10 +19,9 @@ python3 run.py \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta/ \
-  --overwrite_output_dir \
+  --output_dir checkpoints/$DATASET_NAME-robert-fusion/ \
   --hidden_dropout_prob $dropout \
-  --seed 11 \
+  --seed 44 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --prefix > log_copa.txt
+  --fusion > log.txt

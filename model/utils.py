@@ -1,8 +1,12 @@
 from enum import Enum
 
+from torch import nn
+import torch
+
 from model.token_classification import (
     BertPrefixForTokenClassification,
     RobertaPrefixForTokenClassification,
+    RobertaPrefixFusionForTokenClassification,
     DebertaPrefixForTokenClassification,
     DebertaV2PrefixForTokenClassification
 )
@@ -11,6 +15,7 @@ from model.sequence_classification import (
     BertPrefixForSequenceClassification,
     BertPromptForSequenceClassification,
     RobertaPrefixForSequenceClassification,
+    RobertaPrefixFusionForSequenceClassification,
     RobertaPromptForSequenceClassification,
     DebertaPrefixForSequenceClassification
 )
@@ -18,12 +23,14 @@ from model.sequence_classification import (
 from model.question_answering import (
     BertPrefixForQuestionAnswering,
     RobertaPrefixModelForQuestionAnswering,
+    RobertaPrefixFusionModelForQuestionAnswering,
     DebertaPrefixModelForQuestionAnswering
 )
 
 from model.multiple_choice import (
     BertPrefixForMultipleChoice,
     RobertaPrefixForMultipleChoice,
+    RobertaPrefixFusionForMultipleChoice,
     DebertaPrefixForMultipleChoice,
     BertPromptForMultipleChoice,
     RobertaPromptForMultipleChoice
@@ -37,11 +44,22 @@ from transformers import (
     AutoModelForMultipleChoice
 )
 
+
 class TaskType(Enum):
     TOKEN_CLASSIFICATION = 1,
     SEQUENCE_CLASSIFICATION = 2,
     QUESTION_ANSWERING = 3,
     MULTIPLE_CHOICE = 4
+
+
+FUSION_MODELS = {
+    "roberta": {
+        TaskType.TOKEN_CLASSIFICATION: RobertaPrefixFusionForTokenClassification,
+        TaskType.SEQUENCE_CLASSIFICATION: RobertaPrefixFusionForSequenceClassification,
+        TaskType.QUESTION_ANSWERING: RobertaPrefixFusionModelForQuestionAnswering,
+        TaskType.MULTIPLE_CHOICE: RobertaPrefixFusionForMultipleChoice,
+    }
+}
 
 PREFIX_MODELS = {
     "bert": {
@@ -88,13 +106,26 @@ AUTO_MODELS = {
     TaskType.MULTIPLE_CHOICE: AutoModelForMultipleChoice,
 }
 
+
 def get_model(model_args, task_type: TaskType, config: AutoConfig, fix_bert: bool = False):
-    if model_args.prefix:
+    if model_args.fusion:
         config.hidden_dropout_prob = model_args.hidden_dropout_prob
         config.pre_seq_len = model_args.pre_seq_len
         config.prefix_projection = model_args.prefix_projection
         config.prefix_hidden_size = model_args.prefix_hidden_size
-        
+
+        model_class = FUSION_MODELS[config.model_type][task_type]
+        model = model_class.from_pretrained(
+            model_args.model_name_or_path,
+            config=config,
+            revision=model_args.model_revision,
+        )
+    elif model_args.prefix:
+        config.hidden_dropout_prob = model_args.hidden_dropout_prob
+        config.pre_seq_len = model_args.pre_seq_len
+        config.prefix_projection = model_args.prefix_projection
+        config.prefix_hidden_size = model_args.prefix_hidden_size
+
         model_class = PREFIX_MODELS[config.model_type][task_type]
         model = model_class.from_pretrained(
             model_args.model_name_or_path,
@@ -139,6 +170,16 @@ def get_model(model_args, task_type: TaskType, config: AutoConfig, fix_bert: boo
             all_param += param.numel()
         total_param = all_param - bert_param
         print('***** total param is {} *****'.format(total_param))
+
+    all_param = 0
+    total_param = 0
+    for _, param in model.named_parameters():
+        total_param += param.numel()
+        if param.requires_grad == True:
+            all_param += param.numel()
+
+    print('***** tunable param is {} *****'.format(all_param))
+    print('***** total param is {} *****'.format(total_param))
     return model
 
 
@@ -150,11 +191,14 @@ def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fi
         config.prefix_hidden_size = model_args.prefix_hidden_size
 
         if task_type == TaskType.TOKEN_CLASSIFICATION:
-            from model.token_classification import BertPrefixModel, RobertaPrefixModel, DebertaPrefixModel, DebertaV2PrefixModel
+            from model.token_classification import BertPrefixModel, RobertaPrefixModel, DebertaPrefixModel, \
+                DebertaV2PrefixModel
         elif task_type == TaskType.SEQUENCE_CLASSIFICATION:
-            from model.sequence_classification import BertPrefixModel, RobertaPrefixModel, DebertaPrefixModel, DebertaV2PrefixModel
+            from model.sequence_classification import BertPrefixModel, RobertaPrefixModel, DebertaPrefixModel, \
+                DebertaV2PrefixModel
         elif task_type == TaskType.QUESTION_ANSWERING:
-            from model.question_answering import BertPrefixModel, RobertaPrefixModel, DebertaPrefixModel, DebertaV2PrefixModel
+            from model.question_answering import BertPrefixModel, RobertaPrefixModel, DebertaPrefixModel, \
+                DebertaV2PrefixModel
         elif task_type == TaskType.MULTIPLE_CHOICE:
             from model.multiple_choice import BertPrefixModel
 
@@ -204,7 +248,7 @@ def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fi
             )
         else:
             raise NotImplementedError
-            
+
 
     else:
         if task_type == TaskType.TOKEN_CLASSIFICATION:
@@ -213,7 +257,7 @@ def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fi
                 config=config,
                 revision=model_args.model_revision,
             )
-            
+
         elif task_type == TaskType.SEQUENCE_CLASSIFICATION:
             model = AutoModelForSequenceClassification.from_pretrained(
                 model_args.model_name_or_path,
@@ -233,7 +277,7 @@ def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fi
                 config=config,
                 revision=model_args.model_revision,
             )
-    
+
         bert_param = 0
         if fix_bert:
             if config.model_type == "bert":
@@ -251,9 +295,25 @@ def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fi
                     param.requires_grad = False
                 for _, param in model.deberta.named_parameters():
                     bert_param += param.numel()
-        all_param = 0
-        for _, param in model.named_parameters():
+    all_param = 0
+    total_param = 0
+    for _, param in model.named_parameters():
+        total_param += param.numel()
+        if param.requires_grad == True:
             all_param += param.numel()
-        total_param = all_param - bert_param
-        print('***** total param is {} *****'.format(total_param))
+
+    print('***** tunable param is {} *****'.format(all_param))
+    print('***** total param is {} *****'.format(total_param))
     return model
+
+
+class LinearWeightedSum(nn.Module):
+    def __init__(self, n_inputs):
+        super(LinearWeightedSum, self).__init__()
+        self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
+
+    def forward(self, input):
+        res = torch.zeros(input[0].shape).to(input[0].device)
+        for emb_idx, emb in enumerate(input):
+            res += emb * self.weights[emb_idx]
+        return res

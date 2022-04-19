@@ -1,21 +1,32 @@
-import logging
-import os
-import sys
-import numpy as np
-from typing import Dict
+from arguments import get_args
 
 import datasets
+import logging
+import os
+import random
+import sys
+
+import torch
 import transformers
 from transformers import set_seed, Trainer
 from transformers.trainer_utils import get_last_checkpoint
 
-from arguments import get_args
+from transformers import (
+    AutoConfig,
+    AutoTokenizer,
+)
+
+from model.utils import get_model, TaskType, LinearWeightedSum
+from tasks.superglue.dataset import SuperGlueDataset
+from training.trainer_base import BaseTrainer
+from training.trainer_exp import ExponentialTrainer
 
 from tasks.utils import *
 
 os.environ["WANDB_DISABLED"] = "true"
 
 logger = logging.getLogger(__name__)
+
 
 def train(trainer, resume_from_checkpoint=None, last_checkpoint=None):
     checkpoint = None
@@ -33,35 +44,6 @@ def train(trainer, resume_from_checkpoint=None, last_checkpoint=None):
     trainer.save_state()
 
     trainer.log_best_metrics()
-
-def evaluate(trainer):
-    logger.info("*** Evaluate ***")
-    metrics = trainer.evaluate()
-
-    trainer.log_metrics("eval", metrics)
-    trainer.save_metrics("eval", metrics)
-
-def predict(trainer, predict_dataset=None):
-    if predict_dataset is None:
-        logger.info("No dataset is available for testing")
-
-    elif isinstance(predict_dataset, dict):
-        
-        for dataset_name, d in predict_dataset.items():
-            logger.info("*** Predict: %s ***" % dataset_name)
-            predictions, labels, metrics = trainer.predict(d, metric_key_prefix="predict")
-            predictions = np.argmax(predictions, axis=2)
-
-            trainer.log_metrics("predict", metrics)
-            trainer.save_metrics("predict", metrics)
-
-    else:
-        logger.info("*** Predict ***")
-        predictions, labels, metrics = trainer.predict(predict_dataset, metric_key_prefix="predict")
-        predictions = np.argmax(predictions, axis=2)
-
-        trainer.log_metrics("predict", metrics)
-        trainer.save_metrics("predict", metrics)
 
 if __name__ == '__main__':
 
@@ -88,7 +70,6 @@ if __name__ == '__main__':
         + f"distributed training: {bool(training_args.local_rank != -1)}, 16-bits training: {training_args.fp16}"
     )
     logger.info(f"Training/evaluation parameters {training_args}")
-    
 
     if not os.path.isdir("checkpoints") or not os.path.exists("checkpoints"):
         os.mkdir("checkpoints")
@@ -108,40 +89,23 @@ if __name__ == '__main__':
     elif data_args.task_name.lower() == "srl":
         assert data_args.dataset_name.lower() in SRL_DATASETS
         from tasks.srl.get_trainer import get_trainer
-    
+
     elif data_args.task_name.lower() == "qa":
         assert data_args.dataset_name.lower() in QA_DATASETS
         from tasks.qa.get_trainer import get_trainer
-        
+
     else:
-        raise NotImplementedError('Task {} is not implemented. Please choose a task from: {}'.format(data_args.task_name, ", ".join(TASKS)))
+        raise NotImplementedError(
+            'Task {} is not implemented. Please choose a task from: {}'.format(data_args.task_name, ", ".join(TASKS)))
 
     set_seed(training_args.seed)
 
     trainer, predict_dataset = get_trainer(args)
 
-    last_checkpoint = None
-    if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
-        last_checkpoint = get_last_checkpoint(training_args.output_dir)
-        if last_checkpoint is None and len(os.listdir(training_args.output_dir)) > 0:
-            raise ValueError(
-                f"Output directory ({training_args.output_dir}) already exists and is not empty. "
-                "Use --overwrite_output_dir to overcome."
-            )
-        elif last_checkpoint is not None and training_args.resume_from_checkpoint is None:
-            logger.info(
-                f"Checkpoint detected, resuming training at {last_checkpoint}. To avoid this behavior, change "
-                "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
-            )
+    prompt_file_paths = os.listdir('prompts')
 
+    prompts = []
+    for file_path in prompt_file_paths:
+        prompts.append(torch.load(file_path))
 
-    if training_args.do_train:
-        train(trainer, training_args.resume_from_checkpoint, last_checkpoint)
-    
-    if training_args.do_eval:
-        evaluate(trainer)
-
-    # if training_args.do_predict:
-    #     predict(trainer, predict_dataset)
-
-   
+    torch.save(past_key_values[0], 'prompts/' + data_args.dataset_name + '.pt')

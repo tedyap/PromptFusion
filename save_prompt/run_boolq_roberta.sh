@@ -1,15 +1,15 @@
 export TASK_NAME=superglue
-export DATASET_NAME=copa
+export DATASET_NAME=boolq
 export CUDA_VISIBLE_DEVICES=0
 
-bs=16
-lr=9e-3
+bs=32
+lr=7e-3
 dropout=0.1
 psl=8
-epoch=120
+epoch=100
 
-python3 run.py \
-  --model_name_or_path roberta-large \
+python3 get_prompt.py \
+  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -25,4 +25,4 @@ python3 run.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --prefix > log_copa.txt
+  --prefix > log.txt

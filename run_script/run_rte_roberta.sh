@@ -20,9 +20,9 @@ python3 run.py \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
   --output_dir checkpoints/$DATASET_NAME-roberta/ \
-  --overwrite_output_dir \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --prefix
+  --overwrite_output_dir \
+  --prefix > log_rte.txt

@@ -82,7 +82,7 @@ class SuperGlueDataset():
 
         if training_args.do_train:
             self.train_dataset = raw_datasets["train"]
-            print(raw_datasets["train"])
+            # print(raw_datasets["train"])
             if data_args.max_train_samples is not None:
                 self.train_dataset = self.train_dataset.select(range(data_args.max_train_samples))
 

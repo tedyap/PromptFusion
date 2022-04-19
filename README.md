@@ -37,7 +37,7 @@ Run training scripts in [run_script](run_script) (e.g., RoBERTa for RTE):
 bash run_script/run_rte_roberta.sh
 ```
 
-### Save Trained Prompts on Disk 
+### Save Trained Prompts on Disk
 Run save prompt scripts in [save_promt](save_prompt) (e.g., RoBERTa for RTE):
 
 ```shell

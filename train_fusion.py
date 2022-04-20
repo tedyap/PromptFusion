@@ -102,10 +102,12 @@ if __name__ == '__main__':
 
     trainer, predict_dataset = get_trainer(args)
 
-    prompt_file_paths = os.listdir('prompts')
 
-    prompts = []
-    for file_path in prompt_file_paths:
-        prompts.append(torch.load(file_path))
 
-    torch.save(past_key_values[0], 'prompts/' + data_args.dataset_name + '.pt')
+    # prompt_file_paths = os.listdir('prompts')
+    #
+    # prompts = []
+    # for file_path in prompt_file_paths:
+    #     prompts.append(torch.load(file_path))
+    #
+    # torch.save(past_key_values[0], 'prompts/' + data_args.dataset_name + '.pt')

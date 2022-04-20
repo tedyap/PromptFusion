@@ -37,6 +37,6 @@ def get_prompts():
     # prompts = []
     # for file_path in prompt_file_paths:
     #     prompts.append(torch.load('prompts/' + file_path))
-    p = torch.load('prompts/copa.pt')
+    p = torch.load('prompts/rte.pt')
     prompts = [p,p]
     return prompts

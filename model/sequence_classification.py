@@ -503,6 +503,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         )
         past_key_values = self.dropout(past_key_values)
         past_key_values = past_key_values.permute([2, 0, 3, 1, 4]).split(2)
+        # split 2 (one for key one for value)
         return past_key_values
 
     def forward(
@@ -525,9 +526,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         true_past_key_values = self.get_prompt(batch_size=batch_size)
         weighted_prompts = self.weighted_sum(self.prompts)
         weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
-        past_key_values = (weighted_prompts, weighted_prompts)
-        print(past_key_values[0].shape)
-        print(past_key_values[1].shape)
+        past_key_values = tuple([weighted_prompts for i in self.n_layer])
         print(len(true_past_key_values))
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)

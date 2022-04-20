@@ -23,7 +23,10 @@ class LinearWeightedSum(nn.Module):
 
     def forward(self, input):
         res = torch.zeros(input[0].shape).to(input[0].device)
+
+        print(res.shape)
         for emb_idx, emb in enumerate(input):
+            print(emb.shape)
             res += emb * self.weights[emb_idx]
         return res
 

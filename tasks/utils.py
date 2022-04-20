@@ -1,6 +1,7 @@
 from tasks.glue.dataset import task_to_keys as glue_tasks
 from tasks.superglue.dataset import task_to_keys as superglue_tasks
 import os
+import torch
 
 GLUE_DATASETS = list(glue_tasks.keys())
 SUPERGLUE_DATASETS = list(superglue_tasks.keys())
@@ -35,6 +36,6 @@ def get_prompts():
 
     prompts = []
     for file_path in prompt_file_paths:
-        prompts.append(torch.load('prompts' + file_path))
+        prompts.append(torch.load('prompts/' + file_path))
 
     return prompts

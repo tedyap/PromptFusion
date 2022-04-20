@@ -488,6 +488,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param)) # 9860105
         self.prompts = get_prompts()
+        print('nlayer', self.n_layer)
 
     
     def get_prompt(self, batch_size):

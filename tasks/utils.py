@@ -34,8 +34,9 @@ USE_FAST = {
 def get_prompts():
     prompt_file_paths = os.listdir('prompts')
 
-    prompts = []
-    for file_path in prompt_file_paths:
-        prompts.append(torch.load('prompts/' + file_path))
-
+    # prompts = []
+    # for file_path in prompt_file_paths:
+    #     prompts.append(torch.load('prompts/' + file_path))
+    p = torch.load('prompts/copa.pt')
+    prompts = [p,p]
     return prompts

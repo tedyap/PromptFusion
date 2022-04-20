@@ -61,9 +61,9 @@ def get_trainer(args):
         model = get_model(model_args, TaskType.MULTIPLE_CHOICE, config, fix_bert=True)
 
     # Initialize our Trainer
-    if model_args.fusion:
-        prompts = Dataset.from_dict({"prompts": [get_prompts() for i in range(len(dataset.train_dataset))]})
-        dataset.train_dataset = concatenate_datasets([dataset.train_dataset, prompts], axis=1)
+    # if model_args.fusion:
+    #     prompts = Dataset.from_dict({"prompts": [get_prompts() for i in range(len(dataset.train_dataset))]})
+    #     dataset.train_dataset = concatenate_datasets([dataset.train_dataset, prompts], axis=1)
 
     trainer = BaseTrainer(
         model=model,

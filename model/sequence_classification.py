@@ -12,6 +12,7 @@ from transformers.modeling_outputs import SequenceClassifierOutput, BaseModelOut
 from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaModel, DebertaPreTrainedModel, ContextPooler, StableDropout
 # from model.utils import LinearWeightedSum
+from tasks.utils import get_prompts
 
 import copy
 
@@ -472,6 +473,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
             all_param += param.numel()
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param)) # 9860105
+        self.prompts = get_prompts()
 
     
     def get_prompt(self, batch_size):
@@ -507,6 +509,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         batch_size = input_ids.shape[0]
         past_key_values = self.get_prompt(batch_size=batch_size)
         # past_key_values = self.weighted_sum(prompt_list)
+        print(self.prompts)
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

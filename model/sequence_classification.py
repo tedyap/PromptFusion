@@ -11,7 +11,7 @@ from transformers.modeling_outputs import SequenceClassifierOutput, BaseModelOut
 
 from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaModel, DebertaPreTrainedModel, ContextPooler, StableDropout
-from model.utils import LinearWeightedSum
+# from model.utils import LinearWeightedSum
 from tasks.utils import get_prompts
 
 import copy

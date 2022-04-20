@@ -484,7 +484,8 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
             bert_param += param.numel()
         all_param = 0
         for name, param in self.named_parameters():
-            print(name)
+            if param.requires_grad:
+                print(name)
             all_param += param.numel()
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param)) # 9860105

@@ -476,7 +476,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         self.n_embd = config.hidden_size // config.num_attention_heads
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
-        self.prefix_encoder = PrefixEncoder(config)
+        # self.prefix_encoder = PrefixEncoder(config)
         self.weighted_sum = LinearWeightedSum(2)
 
         bert_param = 0
@@ -484,9 +484,11 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
             bert_param += param.numel()
         all_param = 0
         for name, param in self.named_parameters():
+            print(name)
             all_param += param.numel()
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param)) # 9860105
+
         self.prompts = get_prompts()
         print('nlayer', self.n_layer)
 

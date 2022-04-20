@@ -62,7 +62,7 @@ def get_trainer(args):
 
     # Initialize our Trainer
     if model_args.fusion:
-        prompts = Dataset.from_dict({"prompts": [get_prompts() for i in len(dataset.train_dataset)]})
+        prompts = Dataset.from_dict({"prompts": [get_prompts() for i in range(len(dataset.train_dataset))]})
         dataset.train_dataset = concatenate_datasets([dataset.train_dataset, prompts], axis=1)
 
     trainer = BaseTrainer(

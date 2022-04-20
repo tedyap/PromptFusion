@@ -11,10 +11,20 @@ from transformers.modeling_outputs import SequenceClassifierOutput, BaseModelOut
 
 from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaModel, DebertaPreTrainedModel, ContextPooler, StableDropout
-# from model.utils import LinearWeightedSum
 from tasks.utils import get_prompts
 
 import copy
+
+class LinearWeightedSum(nn.Module):
+    def __init__(self, n_inputs):
+        super(LinearWeightedSum, self).__init__()
+        self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
+
+    def forward(self, input):
+        res = torch.zeros(input[0].shape).to(input[0].device)
+        for emb_idx, emb in enumerate(input):
+            res += emb * self.weights[emb_idx]
+        return res
 
 class BertForSequenceClassification(BertPreTrainedModel):
     def __init__(self, config):

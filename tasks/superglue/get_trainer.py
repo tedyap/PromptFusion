@@ -76,8 +76,4 @@ def get_trainer(args):
         test_key=dataset.test_key
     )
 
-    print(dataset.train_dataset)
-    print(type(dataset.train_dataset))
-
-
     return trainer, None

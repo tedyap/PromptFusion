@@ -526,6 +526,8 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         weighted_prompts = self.weighted_sum(self.prompts)
         weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
         past_key_values = (weighted_prompts, weighted_prompts)
+        print(past_key_values[0].shape)
+        print(past_key_values[1].shape)
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

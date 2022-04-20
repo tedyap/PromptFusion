@@ -87,7 +87,7 @@ if __name__ == '__main__':
     trainer, predict_dataset = get_trainer(args)
 
     if training_args.do_train:
-        train(trainer, training_args.resume_from_checkpoint, last_checkpoint)
+        train(trainer)
 
     # prompt_file_paths = os.listdir('prompts')
     #

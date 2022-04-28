@@ -605,7 +605,7 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         self.n_layer = config.num_hidden_layers
         self.n_head = config.num_attention_heads
         self.n_embd = config.hidden_size // config.num_attention_heads
-
+        self.prompt_attentions = nn.modulelist([nn.MultiheadAttention(self.emd, 1) for _ in range(self.n_layer)])
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
         self.weighted_sum = LinearWeightedSum(2)
@@ -658,10 +658,29 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
 
         batch_size = input_ids.shape[0]
         # true_past_key_values = self.get_prompt(batch_size=batch_size)
-        weighted_prompts = self.weighted_sum(self.prompts)
-        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
-        past_key_values = tuple([weighted_prompts for i in range(self.n_layer)])
+        #rm linear weigh sum; adapt
+        # weighted_prompts = self.weighted_sum(self.prompts)
+        # weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
+        '''
+        past_key_values= []
+        empty tensor  = torch.zeros([24, 2, batch_size, 16, 128, 64]])
+        prompts = [task size, 24, 2, batch_size, 16, 128, 64]
+        for layer in 24:
+            layer_prompt = prompt[:, layer, 2, :, :, :]
+            kp, vp = prompt[:, layer, 0 ...], prompt[:, layer, 1 ...]
+            kp, vp  = squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
 
+            attn_output, attn_output_weights = self.prompt_attentions[layer]( mean_pool(input_embeds), kp, vp )
+            new_k, new_v = attn_output, attn_output.deep_copy()
+
+            new_k = new_k.reshape([batch_size, 16, 128, 64])
+            new_v = new_v.reshape([batch_size, 16, 128, 64])
+
+            stack(new_k, new_v) <- [2, batch_size, 16, 128, 64]].permute(...) #at the new first dimension
+ 
+            past_key_values.append(stack)
+        past_key_values = tuple(past_key_values)
+        '''
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)
 

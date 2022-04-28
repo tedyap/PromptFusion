@@ -87,4 +87,6 @@ if __name__ == '__main__':
     with torch.no_grad():
         past_key_values = list(trainer.model.get_prompt(1))
 
+    past_key_values = torch.stack(list_of_tensors)
+
     torch.save(past_key_values, 'prompts/' + data_args.dataset_name + '.pt')

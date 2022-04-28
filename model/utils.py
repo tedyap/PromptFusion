@@ -15,7 +15,7 @@ from model.sequence_classification import (
     BertPrefixForSequenceClassification,
     BertPromptForSequenceClassification,
     RobertaPrefixForSequenceClassification,
-    RobertaPrefixFusionForSequenceClassification,
+    RobertaPrefixFusionScalarForSequenceClassification,
     RobertaPromptForSequenceClassification,
     DebertaPrefixForSequenceClassification
 )
@@ -52,12 +52,30 @@ class TaskType(Enum):
     MULTIPLE_CHOICE = 4
 
 
-FUSION_MODELS = {
+FUSION_SCALAR_MODELS = {
     "roberta": {
-        TaskType.TOKEN_CLASSIFICATION: RobertaPrefixFusionForTokenClassification,
-        TaskType.SEQUENCE_CLASSIFICATION: RobertaPrefixFusionForSequenceClassification,
-        TaskType.QUESTION_ANSWERING: RobertaPrefixFusionModelForQuestionAnswering,
-        TaskType.MULTIPLE_CHOICE: RobertaPrefixFusionForMultipleChoice,
+        TaskType.TOKEN_CLASSIFICATION: RobertaPrefixFusionScalarForTokenClassification,
+        TaskType.SEQUENCE_CLASSIFICATION: RobertaPrefixFusionScalarForSequenceClassification,
+        TaskType.QUESTION_ANSWERING: RobertaPrefixFusionScalarModelForQuestionAnswering,
+        TaskType.MULTIPLE_CHOICE: RobertaPrefixFusionScalarForMultipleChoice,
+    }
+}
+
+FUSION_ATTENTION1_MODELS = {
+    "roberta": {
+        TaskType.TOKEN_CLASSIFICATION: RobertaPrefixFusionAttention1ForTokenClassification,
+        TaskType.SEQUENCE_CLASSIFICATION: RobertaPrefixFusionAttention1ForSequenceClassification,
+        TaskType.QUESTION_ANSWERING: RobertaPrefixFusionAttention1ModelForQuestionAnswering,
+        TaskType.MULTIPLE_CHOICE: RobertaPrefixFusionAttention1ForMultipleChoice,
+    }
+}
+
+FUSION_ATTENTION2_MODELS = {
+    "roberta": {
+        TaskType.TOKEN_CLASSIFICATION: RobertaPrefixFusionAttention2ForTokenClassification,
+        TaskType.SEQUENCE_CLASSIFICATION: RobertaPrefixFusionAttention2ForSequenceClassification,
+        TaskType.QUESTION_ANSWERING: RobertaPrefixFusionAttention2ModelForQuestionAnswering,
+        TaskType.MULTIPLE_CHOICE: RobertaPrefixFusionAttention2ForMultipleChoice,
     }
 }
 
@@ -108,13 +126,37 @@ AUTO_MODELS = {
 
 
 def get_model(model_args, task_type: TaskType, config: AutoConfig, fix_bert: bool = False):
-    if model_args.fusion:
+    if model_args.fusion_scalar:
         config.hidden_dropout_prob = model_args.hidden_dropout_prob
         config.pre_seq_len = model_args.pre_seq_len
         config.prefix_projection = model_args.prefix_projection
         config.prefix_hidden_size = model_args.prefix_hidden_size
 
-        model_class = FUSION_MODELS[config.model_type][task_type]
+        model_class = FUSION_SCALAR_MODELS[config.model_type][task_type]
+        model = model_class.from_pretrained(
+            model_args.model_name_or_path,
+            config=config,
+            revision=model_args.model_revision,
+        )
+    elif model_args.fusion_attention1:
+        config.hidden_dropout_prob = model_args.hidden_dropout_prob
+        config.pre_seq_len = model_args.pre_seq_len
+        config.prefix_projection = model_args.prefix_projection
+        config.prefix_hidden_size = model_args.prefix_hidden_size
+
+        model_class = FUSION_ATTENTION1_MODELS[config.model_type][task_type]
+        model = model_class.from_pretrained(
+            model_args.model_name_or_path,
+            config=config,
+            revision=model_args.model_revision,
+        )
+    elif model_args.fusion_attention2:
+        config.hidden_dropout_prob = model_args.hidden_dropout_prob
+        config.pre_seq_len = model_args.pre_seq_len
+        config.prefix_projection = model_args.prefix_projection
+        config.prefix_hidden_size = model_args.prefix_hidden_size
+
+        model_class = FUSION_ATTENTION2_MODELS[config.model_type][task_type]
         model = model_class.from_pretrained(
             model_args.model_name_or_path,
             config=config,

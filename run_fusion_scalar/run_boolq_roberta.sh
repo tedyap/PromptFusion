@@ -1,12 +1,12 @@
 export TASK_NAME=superglue
-export DATASET_NAME=wsc
+export DATASET_NAME=boolq
 export CUDA_VISIBLE_DEVICES=0
 
-bs=16
-lr=1e-2
+bs=32
+lr=7e-3
 dropout=0.1
-psl=8
-epoch=10
+psl=128
+epoch=100
 
 python3 train_fusion.py \
   --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
@@ -19,9 +19,10 @@ python3 train_fusion.py \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-robert-fusion/ \
+  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
+  --overwrite_output_dir \
   --hidden_dropout_prob $dropout \
-  --seed 44 \
+  --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion > log.txt
+  --fusion_scalar > log.txt

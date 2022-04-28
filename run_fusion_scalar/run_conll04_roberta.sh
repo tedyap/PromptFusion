@@ -1,12 +1,12 @@
-export TASK_NAME=qa
-export DATASET_NAME=squad
+export TASK_NAME=ner
+export DATASET_NAME=conll2004
 export CUDA_VISIBLE_DEVICES=0
 
-bs=8
-lr=5e-3
-dropout=0.2
-psl=16
-epoch=30
+bs=32
+lr=6e-2
+dropout=0.1
+psl=128
+epoch=80
 
 python3 train_fusion.py \
   --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
@@ -14,13 +14,16 @@ python3 train_fusion.py \
   --dataset_name $DATASET_NAME \
   --do_train \
   --do_eval \
+  --do_predict \
+  --max_seq_length 128 \
   --per_device_train_batch_size $bs \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta-fusion/ \
+  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion > log.txt
+  --fusion_scalar > log.txt
+

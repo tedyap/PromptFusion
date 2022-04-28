@@ -1,12 +1,12 @@
 export TASK_NAME=srl
-export DATASET_NAME=conll2012
+export DATASET_NAME=conll2005
 export CUDA_VISIBLE_DEVICES=0
 
-bs=32
-lr=5e-3
+bs=16
+lr=6e-3
 dropout=0.1
-psl=64
-epoch=45
+psl=128
+epoch=15
 
 python3 train_fusion.py \
   --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
@@ -20,10 +20,9 @@ python3 train_fusion.py \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta-fusion/ \
-  --overwrite_output_dir \
+  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion > log.txt
+  --fusion_scalar > log.txt

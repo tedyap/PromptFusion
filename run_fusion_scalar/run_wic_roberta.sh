@@ -5,7 +5,7 @@ export CUDA_VISIBLE_DEVICES=0
 bs=32
 lr=1e-2
 dropout=0.1
-psl=8
+psl=128
 epoch=50
 
 python3 train_fusion.py \
@@ -19,9 +19,9 @@ python3 train_fusion.py \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta-fusion/ \
+  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion > log.txt
+  --fusion_scalar > log.txt

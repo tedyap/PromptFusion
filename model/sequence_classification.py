@@ -1,6 +1,7 @@
 import torch
 from torch._C import NoopLogger
 import torch.nn
+from torch import nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import CrossEntropyLoss, MSELoss, BCEWithLogitsLoss
@@ -11,9 +12,23 @@ from transformers.modeling_outputs import SequenceClassifierOutput, BaseModelOut
 
 from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaModel, DebertaPreTrainedModel, ContextPooler, StableDropout
-# from model.utils import LinearWeightedSum
+from tasks.utils import get_prompts
 
 import copy
+
+class LinearWeightedSum(nn.Module):
+    def __init__(self, n_inputs):
+        super(LinearWeightedSum, self).__init__()
+        self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
+
+    def forward(self, input):
+        res = torch.zeros(input[0].shape).to(input[0].device)
+
+        print('res', res.shape)
+        for emb_idx, emb in enumerate(input):
+            print('emb', emb.shape)
+            res += emb * self.weights[emb_idx]
+        return res
 
 class BertForSequenceClassification(BertPreTrainedModel):
     def __init__(self, config):
@@ -461,17 +476,23 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         self.n_embd = config.hidden_size // config.num_attention_heads
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
-        self.prefix_encoder = PrefixEncoder(config)
-        # self.weighted_sum = LinearWeightedSum(self.prompt_len)
+        # self.prefix_encoder = PrefixEncoder(config)
+        self.weighted_sum = LinearWeightedSum(2)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
             bert_param += param.numel()
         all_param = 0
         for name, param in self.named_parameters():
+            if param.requires_grad:
+                print(name)
+                print(param.numel())
             all_param += param.numel()
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param)) # 9860105
+
+        self.prompts = get_prompts()
+        print('nlayer', self.n_layer)
 
     
     def get_prompt(self, batch_size):
@@ -486,6 +507,7 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         )
         past_key_values = self.dropout(past_key_values)
         past_key_values = past_key_values.permute([2, 0, 3, 1, 4]).split(2)
+        # split 2 (one for key one for value)
         return past_key_values
 
     def forward(
@@ -505,8 +527,10 @@ class RobertaPrefixFusionForSequenceClassification(RobertaPreTrainedModel):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         batch_size = input_ids.shape[0]
-        past_key_values = self.get_prompt(batch_size=batch_size)
-        # past_key_values = self.weighted_sum(prompt_list)
+        # true_past_key_values = self.get_prompt(batch_size=batch_size)
+        weighted_prompts = self.weighted_sum(self.prompts)
+        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
+        past_key_values = tuple([weighted_prompts for i in range(self.n_layer)])
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

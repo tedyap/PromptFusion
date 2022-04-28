@@ -12,8 +12,13 @@ from model.utils import get_model, TaskType
 from tasks.superglue.dataset import SuperGlueDataset
 from training.trainer_base import BaseTrainer
 from training.trainer_exp import ExponentialTrainer
+from tasks.utils import get_prompts
+
+from datasets import Dataset
+from datasets import concatenate_datasets
 
 logger = logging.getLogger(__name__)
+
 
 def get_trainer(args):
     model_args, data_args, training_args, _ = args
@@ -56,6 +61,10 @@ def get_trainer(args):
         model = get_model(model_args, TaskType.MULTIPLE_CHOICE, config, fix_bert=True)
 
     # Initialize our Trainer
+    # if model_args.fusion:
+    #     prompts = Dataset.from_dict({"prompts": [get_prompts() for i in range(len(dataset.train_dataset))]})
+    #     dataset.train_dataset = concatenate_datasets([dataset.train_dataset, prompts], axis=1)
+
     trainer = BaseTrainer(
         model=model,
         args=training_args,
@@ -66,9 +75,5 @@ def get_trainer(args):
         data_collator=dataset.data_collator,
         test_key=dataset.test_key
     )
-
-    print(dataset.train_dataset)
-    print(type(dataset.train_dataset))
-
 
     return trainer, None

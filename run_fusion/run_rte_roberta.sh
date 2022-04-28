@@ -24,4 +24,4 @@ python3 train_fusion.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion > log_rte.txt
+  --fusion > log_fusion.txt

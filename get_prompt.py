@@ -85,6 +85,6 @@ if __name__ == '__main__':
     trainer, predict_dataset = get_trainer(args)
 
     with torch.no_grad():
-        past_key_values = list(trainer.model.get_prompt(4))
+        past_key_values = list(trainer.model.get_prompt(1))
 
     torch.save(past_key_values[0], 'prompts/' + data_args.dataset_name + '.pt')

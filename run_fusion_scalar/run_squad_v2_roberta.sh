@@ -1,12 +1,12 @@
-export TASK_NAME=superglue
-export DATASET_NAME=rte
+export TASK_NAME=qa
+export DATASET_NAME=squad_v2
 export CUDA_VISIBLE_DEVICES=0
 
-bs=32
+bs=8
 lr=5e-3
-dropout=0.1
+dropout=0.2
 psl=128
-epoch=100
+epoch=10
 
 python3 train_fusion.py \
   --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
@@ -14,14 +14,13 @@ python3 train_fusion.py \
   --dataset_name $DATASET_NAME \
   --do_train \
   --do_eval \
-  --max_seq_length 128 \
   --per_device_train_batch_size $bs \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta-fusion/ \
+  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion > log_fusion.txt
+  --fusion_scalar > log.txt

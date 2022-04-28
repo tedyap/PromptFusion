@@ -123,10 +123,24 @@ class ModelArguments:
         },
     )
 
-    fusion: bool = field(
+    fusion_scalar: bool = field(
         default=False,
         metadata={
-            "help": "Will use fusion during training"
+            "help": "Will use fusion scalar during training"
+        }
+    )
+
+    fusion_attention_1: bool = field(
+        default=False,
+        metadata={
+            "help": "Will use fusion attention 1 during training"
+        }
+    )
+
+    fusion_attention_2: bool = field(
+        default=False,
+        metadata={
+            "help": "Will use fusion attention 2 during training"
         }
     )
 

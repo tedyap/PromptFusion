@@ -45,10 +45,10 @@ bash save_prompt/run_rte_roberta.sh
 ```
 
 ### Second Stage: PromptFusion Training
-Run save prompt scripts in [run_fusion](run_fusion) (e.g., RoBERTa for RTE):
+Run save prompt scripts in [run_fusion](run_fusion_scalar) (e.g., RoBERTa for RTE):
 
 ```shell
-bash run_fusion/run_rte_roberta.sh
+bash run_fusion_scalar/run_rte_roberta.sh
 ```
 
 ### Implemented Results

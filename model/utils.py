@@ -6,7 +6,9 @@ import torch
 from model.token_classification import (
     BertPrefixForTokenClassification,
     RobertaPrefixForTokenClassification,
-    RobertaPrefixFusionForTokenClassification,
+    RobertaPrefixFusionScalarForTokenClassification,
+    RobertaPrefixFusionAttention1ForTokenClassification,
+    RobertaPrefixFusionAttention2ForTokenClassification,
     DebertaPrefixForTokenClassification,
     DebertaV2PrefixForTokenClassification
 )
@@ -16,6 +18,8 @@ from model.sequence_classification import (
     BertPromptForSequenceClassification,
     RobertaPrefixForSequenceClassification,
     RobertaPrefixFusionScalarForSequenceClassification,
+    RobertaPrefixFusionAttention1ForSequenceClassification,
+    RobertaPrefixFusionAttention2ForSequenceClassification,
     RobertaPromptForSequenceClassification,
     DebertaPrefixForSequenceClassification
 )
@@ -23,14 +27,18 @@ from model.sequence_classification import (
 from model.question_answering import (
     BertPrefixForQuestionAnswering,
     RobertaPrefixModelForQuestionAnswering,
-    RobertaPrefixFusionModelForQuestionAnswering,
+    RobertaPrefixFusionScalarModelForQuestionAnswering,
+    RobertaPrefixFusionAttention1ModelForQuestionAnswering,
+    RobertaPrefixFusionAttention2ModelForQuestionAnswering,
     DebertaPrefixModelForQuestionAnswering
 )
 
 from model.multiple_choice import (
     BertPrefixForMultipleChoice,
     RobertaPrefixForMultipleChoice,
-    RobertaPrefixFusionForMultipleChoice,
+    RobertaPrefixFusionScalarForMultipleChoice,
+    RobertaPrefixFusionAttention1ForMultipleChoice,
+    RobertaPrefixFusionAttention2ForMultipleChoice,
     DebertaPrefixForMultipleChoice,
     BertPromptForMultipleChoice,
     RobertaPromptForMultipleChoice

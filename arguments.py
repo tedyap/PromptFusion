@@ -130,14 +130,14 @@ class ModelArguments:
         }
     )
 
-    fusion_attention_1: bool = field(
+    fusion_attention1: bool = field(
         default=False,
         metadata={
             "help": "Will use fusion attention 1 during training"
         }
     )
 
-    fusion_attention_2: bool = field(
+    fusion_attention2: bool = field(
         default=False,
         metadata={
             "help": "Will use fusion attention 2 during training"

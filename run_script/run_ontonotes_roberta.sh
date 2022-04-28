@@ -5,7 +5,7 @@ export CUDA_VISIBLE_DEVICES=0
 bs=16
 lr=7e-3
 dropout=0.1
-psl=48
+psl=128
 epoch=60
 
 python3 run.py \

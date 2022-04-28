@@ -4,7 +4,7 @@ export CUDA_VISIBLE_DEVICES=0
 
 bs=16
 epoch=30
-psl=11
+psl=128
 lr=3e-2
 dropout=0.1
 

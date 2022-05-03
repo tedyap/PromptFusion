@@ -1,0 +1,118 @@
+05/03/2022 15:50:58 - WARNING - __main__ - Process rank: -1, device: cpu, n_gpu: 0distributed training: False, 16-bits training: False
+05/03/2022 15:50:58 - INFO - __main__ - Training/evaluation parameters TrainingArguments(
+_n_gpu=0,
+adafactor=False,
+adam_beta1=0.9,
+adam_beta2=0.999,
+adam_epsilon=1e-08,
+dataloader_drop_last=False,
+dataloader_num_workers=0,
+dataloader_pin_memory=True,
+ddp_find_unused_parameters=None,
+debug=[],
+deepspeed=None,
+disable_tqdm=False,
+do_eval=True,
+do_predict=False,
+do_train=True,
+eval_accumulation_steps=None,
+eval_steps=None,
+evaluation_strategy=IntervalStrategy.EPOCH,
+fp16=False,
+fp16_backend=auto,
+fp16_full_eval=False,
+fp16_opt_level=O1,
+gradient_accumulation_steps=1,
+gradient_checkpointing=False,
+greater_is_better=None,
+group_by_length=False,
+hub_model_id=None,
+hub_strategy=HubStrategy.EVERY_SAVE,
+hub_token=<HUB_TOKEN>,
+ignore_data_skip=False,
+label_names=None,
+label_smoothing_factor=0.0,
+learning_rate=0.005,
+length_column_name=length,
+load_best_model_at_end=False,
+local_rank=-1,
+log_level=-1,
+log_level_replica=-1,
+log_on_each_node=True,
+logging_dir=/scratch/mc8895/checkpoints_1012/rte-roberta-fusion-scalar/runs/May03_15-50-58_gr003.hpc.nyu.edu,
+logging_first_step=False,
+logging_nan_inf_filter=True,
+logging_steps=500,
+logging_strategy=IntervalStrategy.STEPS,
+lr_scheduler_type=SchedulerType.LINEAR,
+max_grad_norm=1.0,
+max_steps=-1,
+metric_for_best_model=None,
+mp_parameters=,
+no_cuda=False,
+num_train_epochs=100.0,
+output_dir=/scratch/mc8895/checkpoints_1012/rte-roberta-fusion-scalar/,
+overwrite_output_dir=False,
+past_index=-1,
+per_device_eval_batch_size=8,
+per_device_train_batch_size=32,
+prediction_loss_only=False,
+push_to_hub=False,
+push_to_hub_model_id=None,
+push_to_hub_organization=None,
+push_to_hub_token=<PUSH_TO_HUB_TOKEN>,
+remove_unused_columns=True,
+report_to=[],
+resume_from_checkpoint=None,
+run_name=/scratch/mc8895/checkpoints_1012/rte-roberta-fusion-scalar/,
+save_on_each_node=False,
+save_steps=500,
+save_strategy=IntervalStrategy.NO,
+save_total_limit=None,
+seed=11,
+sharded_ddp=[],
+skip_memory_metrics=True,
+tpu_metrics_debug=False,
+tpu_num_cores=None,
+use_legacy_prediction_loop=False,
+warmup_ratio=0.0,
+warmup_steps=0,
+weight_decay=0.0,
+xpu_backend=None,
+)
+05/03/2022 15:50:59 - INFO - datasets.info - Loading Dataset Infos from /home/mc8895/.cache/huggingface/modules/datasets_modules/datasets/super_glue/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83
+05/03/2022 15:50:59 - INFO - datasets.builder - Overwrite dataset info from restored data version.
+05/03/2022 15:50:59 - INFO - datasets.info - Loading Dataset info from /home/mc8895/.cache/huggingface/datasets/super_glue/rte/1.0.2/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83
+05/03/2022 15:50:59 - WARNING - datasets.builder - Reusing dataset super_glue (/home/mc8895/.cache/huggingface/datasets/super_glue/rte/1.0.2/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83)
+05/03/2022 15:50:59 - INFO - datasets.info - Loading Dataset info from /home/mc8895/.cache/huggingface/datasets/super_glue/rte/1.0.2/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83
+{'entailment': 0, 'not_entailment': 1}
+{0: 'entailment', 1: 'not_entailment'}
+05/03/2022 15:50:59 - WARNING - datasets.arrow_dataset - Loading cached processed dataset at /home/mc8895/.cache/huggingface/datasets/super_glue/rte/1.0.2/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83/cache-2731a2f8c95f371d.arrow
+05/03/2022 15:50:59 - WARNING - datasets.arrow_dataset - Loading cached processed dataset at /home/mc8895/.cache/huggingface/datasets/super_glue/rte/1.0.2/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83/cache-c976ecf13be37da7.arrow
+05/03/2022 15:50:59 - WARNING - datasets.arrow_dataset - Loading cached processed dataset at /home/mc8895/.cache/huggingface/datasets/super_glue/rte/1.0.2/2fb163bca9085c1deb906aff20f00c242227ff704a4e8c9cfdfe820be3abfc83/cache-66c713b7ba9d569b.arrow
+05/03/2022 15:50:59 - INFO - tasks.superglue.get_trainer - Sample 1852 of the training set: {'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'hypothesis': 'Wilkins became the captain of Chelsea in 1975.', 'idx': 1852, 'input_ids': [0, 1121, 14873, 6, 10, 753, 76, 793, 3884, 7327, 21, 4507, 5, 3449, 4469, 9, 3098, 6, 1135, 5, 2621, 9, 15172, 8, 55, 2984, 472, 11, 5, 2837, 4, 2, 2, 28886, 7327, 1059, 5, 3449, 9, 3098, 11, 14873, 4, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'label': 0, 'premise': 'In 1975, a 19 year old Wilkins was handed the captaincy of Chelsea, despite the presence of elder and more experienced players in the squad.'}.
+05/03/2022 15:50:59 - INFO - tasks.superglue.get_trainer - Sample 2292 of the training set: {'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'hypothesis': 'Hubble discovers black holes.', 'idx': 2292, 'input_ids': [0, 23730, 5225, 16, 1903, 30339, 12810, 15756, 5, 1046, 9, 5, 9468, 30, 1976, 6030, 21459, 7, 30948, 6, 41, 505, 39364, 13, 29770, 1046, 4, 37006, 1797, 5, 21459, 7, 10935, 30948, 30, 2609, 6030, 22, 7800, 7049, 22462, 60, 10, 780, 1380, 9, 33463, 1295, 999, 373, 230, 2462, 30071, 25083, 4, 1216, 6, 11, 1004, 6, 32, 145, 341, 7, 43460, 877, 55, 6063, 7245, 7049, 22462, 4, 2, 2, 23730, 5225, 28411, 909, 6538, 4, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'label': 1, 'premise': 'Hubble is helping astronomers precisely calculate the age of the universe by providing accurate distances to galaxies, an important prerequisite for calculating age. Hubble measures the distances to neighboring galaxies by finding accurate "milepost markers," a special class of pulsating star called Cepheid variables. These, in turn, are being used to calibrate more remote milepost markers.'}.
+05/03/2022 15:50:59 - INFO - tasks.superglue.get_trainer - Sample 1907 of the training set: {'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'hypothesis': 'Stephen Hawking is a physicist.', 'idx': 1907, 'input_ids': [0, 1711, 6680, 6, 10, 4286, 78, 1850, 30, 8098, 27648, 8, 747, 8277, 30, 1089, 38685, 2459, 39302, 3259, 27604, 6, 6330, 7, 465, 10, 881, 278, 9, 43123, 14, 64, 3922, 70, 5, 6451, 1572, 11, 5, 9468, 35, 17244, 6, 45475, 1073, 4135, 1809, 6, 8, 5, 670, 8, 3953, 10813, 1572, 566, 2849, 31242, 16710, 4, 2, 2, 30273, 27604, 16, 10, 33832, 4, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'label': 0, 'premise': 'That theory, a concept first proposed by Albert Einstein and often reiterated by British astrophysicist Stephen Hawking, seeks to find a single set of equations that can explain all the fundamental forces in the universe: gravity, electromagnetism, and the strong and weak interactive forces among subnuclear particles.'}.
+classifier.weight
+2048
+classifier.bias
+2
+weighted_sum.weights.0
+1
+weighted_sum.weights.1
+1
+weighted_sum.weights.2
+1
+weighted_sum.weights.3
+1
+weighted_sum.weights.4
+1
+weighted_sum.weights.5
+1
+weighted_sum.weights.6
+1
+weighted_sum.weights.7
+1
+weighted_sum.weights.8
+1
+total param is 2059

@@ -533,8 +533,7 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
         past_key_values = weighted_prompts.split(1)
         new_past_key_values = []
         for arr in past_key_values:
-            print('arr', arr.shape)
-            new_past_key_values.append(arr.unsqueeze(dim=0))
+            new_past_key_values.append(arr.squeeze(dim=0))
 
         print('new', new_past_key_values[0].shape)
 

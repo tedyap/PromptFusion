@@ -661,26 +661,32 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         #rm linear weigh sum; adapt
         # weighted_prompts = self.weighted_sum(self.prompts)
         # weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
-        '''
+        task_size = 12
         past_key_values= []
-        empty tensor  = torch.zeros([24, 2, batch_size, 16, 128, 64]])
-        prompts = [task size, 24, 2, batch_size, 16, 128, 64]
-        for layer in 24:
-            layer_prompt = prompt[:, layer, 2, :, :, :]
-            kp, vp = prompt[:, layer, 0 ...], prompt[:, layer, 1 ...]
-            kp, vp  = squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
-
+        # torch.zeros([9, 24, 2, batch_size, 16, 128, 64])
+        # [task_size, n_layer, k/v, batch_size, n_head, pre_seq_len, n_embed]
+        task_size, n_layer, _, batch_size, n_head, pre_seq_len, n_embed = self.prompts.shape
+        for layer in range(24):
+            layer_prompt = self.prompts[:, layer, :, :, :, :, :]
+            #dim: [task_size, batch_size, n_head, pre_seq, n_embd]
+            kp, vp = layer_prompt[:, 0, 0, :, :, :, :].squeeze(), layer_prompt[:, 0, 1, :, :, :, :].squeeze()
+            kp = torch.permute(kp, (3, 1, 5, 2, 0))
+            vp = torch.permute(vp, (3, 1, 5, 2, 0))
+            #permute: pre_seq, batch, n_embed, n_head, task_size ; squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
+            kp, vp  = kp.reshape(pre_seq_len, batch_size, -1), vp.reshape(pre_seq_len, batch_size, -1)
+            print(f"ATTENTION: kp shape {kp.shape}, vp shape {vp.shape}, inputembed {inputs_embeds.shape}")
+            
             attn_output, attn_output_weights = self.prompt_attentions[layer]( mean_pool(input_embeds), kp, vp )
             new_k, new_v = attn_output, attn_output.deep_copy()
 
             new_k = new_k.reshape([batch_size, 16, 128, 64])
             new_v = new_v.reshape([batch_size, 16, 128, 64])
 
-            stack(new_k, new_v) <- [2, batch_size, 16, 128, 64]].permute(...) #at the new first dimension
+            stack(new_k, new_v) <- [2, batch_size, 16, 128, 64].permute(...) #at the new first dimension
  
             past_key_values.append(stack)
         past_key_values = tuple(past_key_values)
-        '''
+        
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)
 

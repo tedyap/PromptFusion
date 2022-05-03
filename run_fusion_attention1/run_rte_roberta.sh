@@ -2,7 +2,7 @@ export TASK_NAME=superglue
 export DATASET_NAME=rte
 export CUDA_VISIBLE_DEVICES=0
 
-bs=32
+bs=16
 lr=5e-3
 dropout=0.1
 psl=128
@@ -10,7 +10,7 @@ epoch=100
 checkpoints=/scratch/mc8895/checkpoints_1012
 
 python3 train_fusion.py \
-  --model_name_or_path roberta-large \
+  --model_name_or_path roberta-base \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \

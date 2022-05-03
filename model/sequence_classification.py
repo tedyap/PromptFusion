@@ -530,7 +530,9 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
         weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=2)
         print('weighted_p', weighted_prompts.shape)
         print(true_past_key_values[0].shape)
-        past_key_values = tuple([weighted_prompts for i in range(self.n_layer)])
+        past_key_values = weighted_prompts.split(2)
+        print(len(past_key_values))
+        print(past_key_values[0])
 
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)

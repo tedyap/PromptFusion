@@ -601,6 +601,8 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         self.classifier = torch.nn.Linear(config.hidden_size, config.num_labels)
         self.init_weights()
         # self.prompt_len = config.prompt_len
+        self.prompt_attentions = nn.ModuleList(
+            [nn.MultiheadAttention(self.n_embd * self.n_head * 9, 1) for _ in range(self.n_layer)])
 
         for param in self.roberta.parameters():
             param.requires_grad = False

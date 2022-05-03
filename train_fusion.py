@@ -22,7 +22,7 @@ from training.trainer_base import BaseTrainer
 from training.trainer_exp import ExponentialTrainer
 
 from tasks.utils import *
-from run import train
+from run import train, evaluate
 
 os.environ["WANDB_DISABLED"] = "true"
 

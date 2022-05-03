@@ -24,9 +24,7 @@ class LinearWeightedSum(nn.Module):
     def forward(self, input):
         res = torch.zeros(input[0].shape).to(input[0].device)
 
-        print('res', res.shape)
         for emb_idx, emb in enumerate(input):
-            print('emb', emb.shape)
             res += emb * self.weights[emb_idx]
         return res
 
@@ -477,7 +475,7 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(2)
+        self.weighted_sum = LinearWeightedSum(9)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():

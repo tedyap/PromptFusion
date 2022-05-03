@@ -9,7 +9,7 @@ psl=128
 epoch=100
 
 python3 get_prompt.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
+  --model_name_or_path checkpoints_1012/$DATASET_NAME-roberta/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \

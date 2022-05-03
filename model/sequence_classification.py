@@ -525,11 +525,13 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         batch_size = input_ids.shape[0]
-        # true_past_key_values = self.get_prompt(batch_size=batch_size)
+        true_past_key_values = self.get_prompt(batch_size=batch_size)
         weighted_prompts = self.weighted_sum(self.prompts)
         weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=2)
         print('weighted_p', weighted_prompts.shape)
+        print(true_past_key_values[0].shape)
         past_key_values = tuple([weighted_prompts for i in range(self.n_layer)])
+
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

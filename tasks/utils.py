@@ -34,9 +34,12 @@ USE_FAST = {
 def get_prompts():
     prompt_file_paths = os.listdir('prompts')
 
-    # prompts = []
-    # for file_path in prompt_file_paths:
-    #     prompts.append(torch.load('prompts/' + file_path))
-    p = torch.load('prompts/rte.pt')
-    prompts = [p,p]
+    prompts = []
+    for file_path in prompt_file_paths:
+        prompts.append(torch.load('prompts/' + file_path))
+
+    prompts = torch.stack(prompts)
+    # p = torch.load('prompts/rte.pt')
+    # prompts = [p,p]
+    print(prompts.shape)
     return prompts

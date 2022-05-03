@@ -5,7 +5,7 @@ export CUDA_VISIBLE_DEVICES=0
 bs=32
 lr=6e-2
 dropout=0.1
-psl=144
+psl=128
 epoch=80
 
 python3 get_prompt.py \

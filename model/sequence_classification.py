@@ -896,6 +896,10 @@ class RobertaPromptForSequenceClassification(RobertaPreTrainedModel):
             token_type_ids=token_type_ids,
         )
         prompts = self.get_prompt(batch_size=batch_size)
+
+        # target_prompt = attention(raw_embeddings, key=prompts, value=prompts)
+        # inputs_embeds = torch.cat((target_prompt, raw_embedding), dim=1)
+
         inputs_embeds = torch.cat((prompts, raw_embedding), dim=1)
         # print(input_embeddings.shape)
         # exit()

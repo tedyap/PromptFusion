@@ -24,9 +24,7 @@ class LinearWeightedSum(nn.Module):
     def forward(self, input):
         res = torch.zeros(input[0].shape).to(input[0].device)
 
-        print('res', res.shape)
         for emb_idx, emb in enumerate(input):
-            print('emb', emb.shape)
             res += emb * self.weights[emb_idx]
         return res
 
@@ -477,7 +475,7 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(2)
+        self.weighted_sum = LinearWeightedSum(9)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -529,8 +527,14 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
         batch_size = input_ids.shape[0]
         # true_past_key_values = self.get_prompt(batch_size=batch_size)
         weighted_prompts = self.weighted_sum(self.prompts)
-        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
-        past_key_values = tuple([weighted_prompts for i in range(self.n_layer)])
+        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=2)
+        print('weighted_p', weighted_prompts.shape)
+        past_key_values = weighted_prompts.split(1)
+        new_past_key_values = []
+        for arr in past_key_values:
+            new_past_key_values.append(arr.squeeze(dim=0))
+
+        past_key_values = tuple(new_past_key_values)
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)
@@ -790,6 +794,8 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             self.n_head,
             self.n_embd
         )
+
+        #24 * 2
         past_key_values = self.dropout(past_key_values)
         past_key_values = past_key_values.permute([2, 0, 3, 1, 4]).split(2)
         # split 2 (one for key one for value)
@@ -919,6 +925,10 @@ class RobertaPromptForSequenceClassification(RobertaPreTrainedModel):
             token_type_ids=token_type_ids,
         )
         prompts = self.get_prompt(batch_size=batch_size)
+
+        # target_prompt = attention(raw_embeddings, key=prompts, value=prompts)
+        # inputs_embeds = torch.cat((target_prompt, raw_embedding), dim=1)
+
         inputs_embeds = torch.cat((prompts, raw_embedding), dim=1)
         # print(input_embeddings.shape)
         # exit()

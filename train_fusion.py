@@ -89,10 +89,5 @@ if __name__ == '__main__':
     if training_args.do_train:
         train(trainer)
 
-    # prompt_file_paths = os.listdir('prompts')
-    #
-    # prompts = []
-    # for file_path in prompt_file_paths:
-    #     prompts.append(torch.load(file_path))
-    #
-    # torch.save(past_key_values[0], 'prompts/' + data_args.dataset_name + '.pt')
+    if training_args.do_eval:
+        evaluate(trainer)

@@ -614,8 +614,8 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
         self.weighted_sum = LinearWeightedSum(9)
-        # self.prompt_attentions = nn.ModuleList(
-        #     [nn.MultiheadAttention(self.n_embd * self.n_head * 9, 1) for _ in range(self.n_layer)])
+        self.prompt_attentions = nn.ModuleList(
+            [nn.MultiheadAttention(self.n_embd * self.n_head * 9, 1) for _ in range(self.n_layer)])
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():

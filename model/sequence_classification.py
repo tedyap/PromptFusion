@@ -609,7 +609,8 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         self.n_layer = config.num_hidden_layers
         self.n_head = config.num_attention_heads
         self.n_embd = config.hidden_size // config.num_attention_heads
-        self.prompt_attentions = nn.modulelist([nn.MultiheadAttention(self.emd, 1) for _ in range(self.n_layer)])
+        #9: task size
+        self.prompt_attentions = nn.ModuleList([nn.MultiheadAttention(self.n_embd * self.n_head*9, 1) for _ in range(self.n_layer)])
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
         self.weighted_sum = LinearWeightedSum(2)
@@ -667,8 +668,7 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         # weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
         task_size = 12
         past_key_values= []
-        # torch.zeros([9, 24, 2, batch_size, 16, 128, 64])
-        # [task_size, n_layer, k/v, batch_size, n_head, pre_seq_len, n_embed]
+        print(self.prompts.shape)
         task_size, n_layer, _, batch_size, n_head, pre_seq_len, n_embed = self.prompts.shape
         for layer in range(24):
             layer_prompt = self.prompts[:, layer, :, :, :, :, :]

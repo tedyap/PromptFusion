@@ -612,7 +612,7 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(2)
+        self.weighted_sum = LinearWeightedSum(9)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -663,8 +663,14 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         batch_size = input_ids.shape[0]
         # true_past_key_values = self.get_prompt(batch_size=batch_size)
         weighted_prompts = self.weighted_sum(self.prompts)
-        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=1)
-        past_key_values = tuple([weighted_prompts for i in range(self.n_layer)])
+        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=2)
+        print('weighted_p', weighted_prompts.shape)
+        past_key_values = weighted_prompts.split(1)
+        new_past_key_values = []
+        for arr in past_key_values:
+            new_past_key_values.append(arr.squeeze(dim=0))
+
+        past_key_values = tuple(new_past_key_values)
 
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

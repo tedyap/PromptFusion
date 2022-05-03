@@ -134,7 +134,6 @@ if __name__ == '__main__':
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
-
     if training_args.do_train:
         train(trainer, training_args.resume_from_checkpoint, last_checkpoint)
     

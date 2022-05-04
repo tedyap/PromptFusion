@@ -19,7 +19,8 @@ import copy
 class LinearWeightedSum(nn.Module):
     def __init__(self, n_inputs):
         super(LinearWeightedSum, self).__init__()
-        self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
+        # self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
+        self.weights = nn.ParameterList([nn.Parameter(torch.tensor([1])) for i in range(n_inputs)])
 
     def forward(self, input):
         res = torch.zeros(input[0].shape).to(input[0].device)

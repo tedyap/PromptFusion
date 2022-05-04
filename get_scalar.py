@@ -85,7 +85,8 @@ if __name__ == '__main__':
     trainer, predict_dataset = get_trainer(args)
 
     model = trainer.model
-    print('weight 0', model.weighted_sum.weights[0])
+    for idx, scalar in enumerate(model.weighted_sum.weights):
+        print('weight {}: {}'.format(idx, scalar))
     # for layer in model.children():
     #     print(type(layer))
     #     if isinstance(layer, model.sequence_classification.LinearWeightedSum):

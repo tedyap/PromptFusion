@@ -8,7 +8,7 @@ dropout=0.1
 psl=128
 epoch=50
 
-python3 train_fusion.py \
+python3 get_scalar.py \
   --model_name_or_path checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
@@ -24,4 +24,4 @@ python3 train_fusion.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_scalar > log_fusion.txt
+  --fusion_scalar > scalar.txt

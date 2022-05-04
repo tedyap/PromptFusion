@@ -6,7 +6,7 @@ bs=32
 lr=5e-3
 dropout=0.1
 psl=128
-epoch=3
+epoch=50
 
 python3 train_fusion.py \
   --model_name_or_path roberta-large \

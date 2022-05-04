@@ -9,7 +9,7 @@ psl=128
 epoch=50
 
 python3 get_scalar.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
+  --model_name_or_path checkpoints/$DATASET_NAME-roberta-fusion-scalar-fixed/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \

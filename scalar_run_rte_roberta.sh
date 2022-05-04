@@ -6,10 +6,10 @@ bs=32
 lr=5e-3
 dropout=0.1
 psl=128
-epoch=100
+epoch=50
 
-python3 get_prompt.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
+python3 train_fusion.py \
+  --model_name_or_path checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -19,9 +19,9 @@ python3 get_prompt.py \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta/ \
+  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-scalar/ \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --prefix > log_rte.txt
+  --fusion_scalar > log_fusion.txt

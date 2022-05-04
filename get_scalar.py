@@ -85,9 +85,10 @@ if __name__ == '__main__':
     trainer, predict_dataset = get_trainer(args)
 
     model = trainer.model
-    for layer in model.children():
-        print(type(layer))
-        if isinstance(layer, torch.nn.Linear):
-            print(layer.state_dict()['weight'])
-            print(layer.state_dict()['bias'])
+    print('weight 0', model.weighted_sum.weights.0.weight)
+    # for layer in model.children():
+    #     print(type(layer))
+    #     if isinstance(layer, model.sequence_classification.LinearWeightedSum):
+    #         print(layer.state_dict()['weight'])
+    #         print(layer.state_dict()['bias'])
 

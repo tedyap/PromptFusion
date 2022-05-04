@@ -87,7 +87,7 @@ if __name__ == '__main__':
     model = trainer.model
     for layer in model.children():
         print(type(layer))
-        if isinstance(layer, nn.Linear):
+        if isinstance(layer, torch.nn.Linear):
             print(layer.state_dict()['weight'])
             print(layer.state_dict()['bias'])
 

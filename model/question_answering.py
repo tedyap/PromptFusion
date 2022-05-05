@@ -1,5 +1,6 @@
 import torch
 import torch.nn
+from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertModel, RobertaPreTrainedModel, RobertaModel
 from transformers.modeling_outputs import QuestionAnsweringModelOutput

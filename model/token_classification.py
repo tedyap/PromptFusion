@@ -1,5 +1,6 @@
 import torch
 import torch.nn
+from torch import nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import CrossEntropyLoss

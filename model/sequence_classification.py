@@ -19,7 +19,6 @@ import copy
 class LinearWeightedSum(nn.Module):
     def __init__(self, n_inputs):
         super(LinearWeightedSum, self).__init__()
-        # self.weights = nn.ParameterList([nn.Parameter(torch.randn(1)) for i in range(n_inputs)])
         self.weights = nn.ParameterList([nn.Parameter(torch.tensor([1/9])) for i in range(n_inputs)])
 
     def forward(self, input):
@@ -491,8 +490,6 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
         print('total param is {}'.format(total_param)) # 9860105
 
         self.prompts = get_prompts()
-        print('nlayer', self.n_layer)
-
     
     def get_prompt(self, batch_size):
         prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)

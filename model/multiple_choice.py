@@ -13,6 +13,18 @@ from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaModel, DebertaPreTrainedModel, ContextPooler, StableDropout
 
 
+class LinearWeightedSum(nn.Module):
+    def __init__(self, n_inputs):
+        super(LinearWeightedSum, self).__init__()
+        self.weights = nn.ParameterList([nn.Parameter(torch.tensor([1/9])) for i in range(n_inputs)])
+
+    def forward(self, input):
+        res = torch.zeros(input[0].shape).to(input[0].device)
+
+        for emb_idx, emb in enumerate(input):
+            res += emb * self.weights[emb_idx]
+        return res
+
 
 class BertForMultipleChoice(BertPreTrainedModel):
     """BERT model for multiple choice tasks.
@@ -374,16 +386,22 @@ class RobertaPrefixFusionScalarForMultipleChoice(RobertaPreTrainedModel):
         self.n_embd = config.hidden_size // config.num_attention_heads
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
-        self.prefix_encoder = PrefixEncoder(config)
+        # self.prefix_encoder = PrefixEncoder(config)
+        self.weighted_sum = LinearWeightedSum(9)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
             bert_param += param.numel()
         all_param = 0
         for name, param in self.named_parameters():
+            if param.requires_grad:
+                print(name)
+                print(param.numel())
             all_param += param.numel()
         total_param = all_param - bert_param
-        print('total param is {}'.format(total_param))
+        print('total param is {}'.format(total_param)) # 9860105
+
+        self.prompts = get_prompts()
 
     def get_prompt(self, batch_size):
         prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)
@@ -431,7 +449,18 @@ class RobertaPrefixFusionScalarForMultipleChoice(RobertaPreTrainedModel):
             else None
         )
 
-        past_key_values = self.get_prompt(batch_size=batch_size * num_choices)
+        # past_key_values = self.get_prompt(batch_size=batch_size * num_choices)
+
+        weighted_prompts = self.weighted_sum(self.prompts)
+        weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size * num_choices, dim=2)
+        print('weighted_p', weighted_prompts.shape)
+        past_key_values = weighted_prompts.split(1)
+        new_past_key_values = []
+        for arr in past_key_values:
+            new_past_key_values.append(arr.squeeze(dim=0))
+
+        past_key_values = tuple(new_past_key_values)
+
         prefix_attention_mask = torch.ones(batch_size * num_choices, self.pre_seq_len).to(self.roberta.device)
         flat_attention_mask = torch.cat((prefix_attention_mask, flat_attention_mask), dim=1)
 

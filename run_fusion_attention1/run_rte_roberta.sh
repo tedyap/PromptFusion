@@ -3,7 +3,7 @@ export DATASET_NAME=rte
 export CUDA_VISIBLE_DEVICES=0
 
 bs=16
-lr=5e-3
+lr=1e-4
 dropout=0.1
 psl=128
 epoch=100

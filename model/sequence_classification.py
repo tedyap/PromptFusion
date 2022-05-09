@@ -694,16 +694,16 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
             kp, vp  = kp.reshape(pre_seq_len, prompt_bz, -1), vp.reshape(pre_seq_len, prompt_bz, -1)
             kp = torch.repeat_interleave(kp, batch_size, dim = 1)
             vp = torch.repeat_interleave(vp, batch_size, dim = 1)
-            print(f"ATTENTION: kp shape {kp.shape}, vp shape {vp.shape}, raw embed {raw_embedding.shape}")
+            # print(f"ATTENTION: kp shape {kp.shape}, vp shape {vp.shape}, raw embed {raw_embedding.shape}")
             query_mean_pooled = raw_embedding.permute((1, 0, 2)).mean(dim = 0).unsqueeze(0)
-            print(f" query_mean_pooled{query_mean_pooled.shape}")
+            # print(f" query_mean_pooled{query_mean_pooled.shape}")
             attn_output, attn_output_weights = self.prompt_attentions[layer]( query_mean_pooled, kp, vp )
-            print(f"attn_output shape {attn_output.shape}")
+            # print(f"attn_output shape {attn_output.shape}")
             new_k, new_v = attn_output, attn_output.detach().clone()
 
             new_k = new_k.reshape([batch_size, self.n_head, 1, -1])#[:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12
             new_v = new_v.reshape([batch_size, self.n_head, 1, -1])#[:, :self.n_head, :, :]
-            print(f"newk, newv dim {new_k.shape}")
+            # print(f"newk, newv dim {new_k.shape}")
 
             new_past_kv = torch.stack([new_k, new_v], dim = 0)
             # stack(new_k, new_v) <- [2, batch_size, 16, 128, 64].permute(...) #at the new first dimension

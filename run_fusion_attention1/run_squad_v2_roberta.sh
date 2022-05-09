@@ -8,8 +8,9 @@ dropout=0.2
 psl=128
 epoch=10
 
+checkpoints=/scratch/mc8895/promptFusion_new/checkpoints
 python3 train_fusion.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
+  --model_name_or_path roberta-base \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -18,7 +19,7 @@ python3 train_fusion.py \
   --learning_rate $lr \
   --num_train_epochs $epoch \
   --pre_seq_len $psl \
-  --output_dir checkpoints/$DATASET_NAME-roberta-fusion-attention1/ \
+  --output_dir $checkpoints/$DATASET_NAME-roberta-fusion-attention1/ \
   --hidden_dropout_prob $dropout \
   --seed 11 \
   --save_strategy no \

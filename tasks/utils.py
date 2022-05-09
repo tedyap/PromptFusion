@@ -32,7 +32,7 @@ USE_FAST = {
 
 
 def get_prompts():
-    prompt_file_paths = os.listdir('/scratch/mc8895/prompts')
+    prompt_file_paths = os.listdir('prompts')
 
     prompts = []
     for idx, file_path in enumerate(prompt_file_paths):

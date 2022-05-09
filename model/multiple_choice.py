@@ -5,6 +5,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import CrossEntropyLoss, MSELoss, BCEWithLogitsLoss
+from tasks.utils import get_prompts
 
 from transformers import BertModel, BertPreTrainedModel
 from transformers import RobertaModel, RobertaPreTrainedModel

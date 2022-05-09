@@ -4,6 +4,7 @@ from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertModel, RobertaPreTrainedModel, RobertaModel
 from transformers.modeling_outputs import QuestionAnsweringModelOutput
+from tasks.utils import get_prompts
 
 from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaPreTrainedModel, DebertaModel

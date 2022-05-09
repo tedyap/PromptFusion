@@ -8,6 +8,7 @@ from torch.nn import CrossEntropyLoss
 from transformers import BertModel, BertPreTrainedModel
 from transformers import RobertaModel, RobertaPreTrainedModel
 from transformers.modeling_outputs import TokenClassifierOutput
+from tasks.utils import get_prompts
 
 from model.prefix_encoder import PrefixEncoder
 from model.deberta import DebertaModel, DebertaPreTrainedModel

@@ -32,19 +32,13 @@ USE_FAST = {
 
 
 def get_prompts():
-    prompt_file_paths = os.listdir('/scratch/mc8895/prompts')
+    prompt_file_paths = os.listdir('prompts')
 
     prompts = []
-<<<<<<< HEAD
     for idx, file_path in enumerate(prompt_file_paths):
         prompts.append(torch.load('prompts/' + file_path))
         print(idx, file_path)
 
-=======
-    for file_path in prompt_file_paths:
-        prompts.append(torch.load('/scratch/mc8895/prompts/' + file_path))
-    
->>>>>>> 4d52f9e3a97ccc2958f91b7b00299962f561d85a
     prompts = torch.stack(prompts)
 
     return prompts

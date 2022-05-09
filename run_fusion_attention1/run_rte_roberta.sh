@@ -10,11 +10,7 @@ epoch=100
 checkpoints=/scratch/mc8895/checkpoints_1012
 
 python3 train_fusion.py \
-<<<<<<< HEAD
-  --model_name_or_path roberta-large \
-=======
   --model_name_or_path roberta-base \
->>>>>>> 4d52f9e3a97ccc2958f91b7b00299962f561d85a
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \

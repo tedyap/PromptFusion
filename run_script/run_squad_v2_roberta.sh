@@ -24,4 +24,4 @@ python3 run.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --prefix > log.txt
+  --prefix > log_squad_v2.txt

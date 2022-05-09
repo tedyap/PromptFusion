@@ -6,7 +6,7 @@ bs=32
 lr=1e-4
 dropout=0.1
 psl=128
-epoch=45
+epoch=25
 
 python3 train_fusion.py \
   --model_name_or_path roberta-base \

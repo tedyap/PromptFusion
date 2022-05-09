@@ -3,7 +3,7 @@ export DATASET_NAME=squad_v2
 export CUDA_VISIBLE_DEVICES=0
 
 bs=8
-lr=5e-3
+lr=1e-4
 dropout=0.2
 psl=128
 epoch=10
@@ -23,4 +23,4 @@ python3 train_fusion.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_scalar > log.txt
+  --fusion_scalar > $DATASET_NAME-roberta-fusion-scalar.txt

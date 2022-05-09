@@ -527,7 +527,6 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
         # true_past_key_values = self.get_prompt(batch_size=batch_size)
         weighted_prompts = self.weighted_sum(self.prompts)
         weighted_prompts = torch.repeat_interleave(weighted_prompts, batch_size, dim=2)
-        print('weighted_p', weighted_prompts.shape)
         past_key_values = weighted_prompts.split(1)
         new_past_key_values = []
         for arr in past_key_values:

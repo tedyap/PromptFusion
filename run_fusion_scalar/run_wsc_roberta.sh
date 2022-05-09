@@ -3,7 +3,7 @@ export DATASET_NAME=wsc
 export CUDA_VISIBLE_DEVICES=0
 
 bs=16
-lr=1e-2
+lr=1e-4
 dropout=0.1
 psl=128
 epoch=10
@@ -24,4 +24,4 @@ python3 train_fusion.py \
   --seed 44 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_scalar > log.txt
+  --fusion_scalar > $DATASET_NAME-roberta-fusion-scalar.txt

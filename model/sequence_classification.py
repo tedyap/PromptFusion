@@ -906,10 +906,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         past_key_values = tuple(past_key_values)
         print(f'layer {len(past_key_values)}, layer 1 pask kv shape {past_key_values[0].shape}')
 
-        true = self.get_prompt(batch_size)
-        print('true', true[0].shape)
-
-        # after mean pooling in Query pre_seq_len =1
         prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)
 

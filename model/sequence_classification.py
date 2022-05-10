@@ -806,9 +806,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         print('total param is {}'.format(total_param))  # 9860105
 
         self.prompts = get_prompts()
-        print('nlayer', self.n_layer)
-        print(f'n_head {self.n_head} n_embd {self.n_embd}')
-
 
     def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):
         return torch.ones(batch_size, pre_seq_len, prompt_n_head * n_embed, device='cuda:0')
@@ -870,7 +867,9 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         print('raw_embed', raw_embedding.device)
 
         for layer in range(self.n_layer):
-            self.prompt_attention_layer1[layer](prompt_init, raw_embedding, raw_embedding)
+            attn_layer1_output, _ = self.prompt_attention_layer1[layer](prompt_init, raw_embedding, raw_embedding)
+
+            print(attn_layer1_output.shape)
             raise
 
             layer_prompt = self.prompts[:, layer, :, :, :, :, :]

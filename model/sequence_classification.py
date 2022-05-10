@@ -789,9 +789,11 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         self.n_embd = config.hidden_size // config.num_attention_heads
         # 9: task size
         kv_dim = config.hidden_size  # 9216
-        self.prompt_attention_layer1 = nn.ModuleList(
+        self.prompt_attn_layer1 = nn.ModuleList(
             [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
-        self.prefix_tokens = torch.arange(self.pre_seq_len).long()
+
+        self.prompt_attn_layer2 = nn.ModuleList(
+            [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=self.n_embd * self.n_head, vdim=self.n_embd * self.n_head) for _ in range(self.n_layer)])
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -867,9 +869,10 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         print('raw_embed', raw_embedding.device)
 
         for layer in range(self.n_layer):
-            attn_layer1_output, _ = self.prompt_attention_layer1[layer](prompt_init, raw_embedding, raw_embedding)
+            attn_layer1_output, _ = self.prompt_attn_layer1[layer](prompt_init, raw_embedding, raw_embedding)
 
             print(attn_layer1_output.shape)
+            # (32, 128, 768)
             raise
 
             layer_prompt = self.prompts[:, layer, :, :, :, :, :]
@@ -883,11 +886,11 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             kp, vp = kp.reshape(pre_seq_len, prompt_bz, -1), vp.reshape(pre_seq_len, prompt_bz, -1)
             kp = torch.repeat_interleave(kp, batch_size, dim=1)
             vp = torch.repeat_interleave(vp, batch_size, dim=1)
-            # print(f"ATTENTION: kp shape {kp.shape}, vp shape {vp.shape}, raw embed {raw_embedding.shape}")
-            query_mean_pooled = raw_embedding.permute((1, 0, 2)).mean(dim=0).unsqueeze(0)
-            # print(f" query_mean_pooled{query_mean_pooled.shape}")
-            attn_output, attn_output_weights = self.prompt_attentions[layer](query_mean_pooled, kp, vp)
-            # print(f"attn_output shape {attn_output.shape}")
+
+            attn_layer2_output, _ = self.prompt_attn_layer2[layer](attn_layer1_output, kp, vp)
+            print('attn2', attn_layer2_output.shape)
+            raise
+
             new_k, new_v = attn_output, attn_output.detach().clone()
 
             new_k = new_k.reshape([batch_size, self.n_head, 1,

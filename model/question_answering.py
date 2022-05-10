@@ -670,7 +670,7 @@ class RobertaPrefixFusionAttention1ModelForQuestionAnswering(RobertaPreTrainedMo
         )
 
 
-class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedModel):
+class RobertaPrefixFusionAttention2ModelForQuestionAnswering(RobertaPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.num_labels = config.num_labels

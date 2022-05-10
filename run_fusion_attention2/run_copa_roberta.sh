@@ -2,7 +2,7 @@ export TASK_NAME=superglue
 export DATASET_NAME=copa
 export CUDA_VISIBLE_DEVICES=0
 
-bs=16
+bs=8
 lr=9e-3
 dropout=0.1
 psl=128

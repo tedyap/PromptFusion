@@ -881,7 +881,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             kp, vp = layer_prompt[:, 0, :, :, :, :], layer_prompt[:, 1, :, :, :, :]
             kp = kp.permute((3, 1, 4, 2, 0))
             vp = vp.permute((3, 1, 4, 2, 0))
-
+            print('before kp', kp.shape)
             # permute: pre_seq, batch, n_embed, n_head, task_size ; squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
             kp, vp = kp.reshape(pre_seq_len*10, prompt_bz, -1), vp.reshape(pre_seq_len*10, prompt_bz, -1)
             kp = torch.repeat_interleave(kp, batch_size, dim=1)

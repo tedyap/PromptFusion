@@ -609,12 +609,16 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
         self.n_layer = config.num_hidden_layers
         self.n_head = config.num_attention_heads
         self.n_embd = config.hidden_size // config.num_attention_heads
-        #9: task size
-        kv_dim = config.hidden_size * 10 #9216
+
+        self.prompts = get_prompts()
+        print('nlayer', self.n_layer)
+        print(f'n_head {self.n_head} n_embd {self.n_embd}')
+        n_tasks = self.prompts.shape[0]
+        kv_dim = config.hidden_size * n_tasks #9216
         self.prompt_attentions = nn.ModuleList([nn.MultiheadAttention(config.hidden_size, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(9)
+        # self.weighted_sum = LinearWeightedSum(9)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -627,10 +631,6 @@ class RobertaPrefixFusionAttention1ForSequenceClassification(RobertaPreTrainedMo
             all_param += param.numel()
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param))  # 9860105
-
-        self.prompts = get_prompts()
-        print('nlayer', self.n_layer)
-        print(f'n_head {self.n_head} n_embd {self.n_embd}')
 
     def get_prompt(self, batch_size):
         prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)

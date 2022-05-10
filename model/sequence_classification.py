@@ -808,7 +808,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         print('total param is {}'.format(total_param))  # 9860105
 
         self.prompts = get_prompts()
-        self.atten2_seq_len = 32
+        self.atten2_seq_len = 8
 
     def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):
         return torch.ones(pre_seq_len, batch_size, prompt_n_head * n_embed, device=self.roberta.device)

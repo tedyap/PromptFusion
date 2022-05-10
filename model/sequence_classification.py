@@ -891,11 +891,11 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
             new_k, new_v = attn_layer2_output, attn_layer2_output.detach().clone()
 
-            new_k = new_k.reshape([batch_size, self.n_head, 1,
-                                   -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12
-            new_v = new_v.reshape([batch_size, self.n_head, 1, -1])  # [:, :self.n_head, :, :]
-            print(f"newk, newv dim {new_k.shape}")
-            raise
+            # new_k = new_k.reshape([batch_size, self.n_head, 1,
+            #                        -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12
+            # new_v = new_v.reshape([batch_size, self.n_head, 1, -1])  # [:, :self.n_head, :, :]
+            # print(f"newk, newv dim {new_k.shape}")
+            # raise
             new_past_kv = torch.stack([new_k, new_v], dim=0)
             # stack(new_k, new_v) <- [2, batch_size, 16, 128, 64].permute(...) #at the new first dimension
 

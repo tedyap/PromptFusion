@@ -3,7 +3,7 @@ export DATASET_NAME=wsc
 export CUDA_VISIBLE_DEVICES=0
 
 bs=16
-lr=1e-2
+lr=1e-4
 dropout=0.1
 psl=128
 epoch=10

@@ -808,6 +808,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         print('total param is {}'.format(total_param))  # 9860105
 
         self.prompts = get_prompts()
+        self.atten2_seq_len = 8
 
     def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):
         return torch.ones(pre_seq_len, batch_size, prompt_n_head * n_embed, device=self.roberta.device)
@@ -861,7 +862,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
         task_size, n_layer, _, prompt_bz, prompt_n_head, pre_seq_len, n_embed = self.prompts.shape
 
-        prompt_init = self.initialize_prompts(batch_size, prompt_n_head, pre_seq_len, n_embed)
+        prompt_init = self.initialize_prompts(batch_size, prompt_n_head, self.atten2_seq_len, n_embed)
         print('prompt_init', prompt_init.shape)
         print('raw_embed', raw_embedding.shape)
 
@@ -871,8 +872,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         for layer in range(self.n_layer):
             attn_layer1_output, _ = self.prompt_attn_layer1[layer](prompt_init, raw_embedding, raw_embedding)
 
-            print(attn_layer1_output.shape)
-            # (32, 128, 768)
+            # (32, self.atten2_seq_len, 768)
 
             layer_prompt = self.prompts[:, layer, :, :, :, :, :]
             # dim: [task_size, batch_size, n_head, pre_seq, n_embd]
@@ -906,7 +906,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         past_key_values = tuple(past_key_values)
         print(f'layer {len(past_key_values)}, layer 1 pask kv shape {past_key_values[0].shape}')
 
-        prefix_attention_mask = torch.ones(batch_size, self.pre_seq_len).to(self.roberta.device)
+        prefix_attention_mask = torch.ones(batch_size, self.atten2_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)
 
         outputs = self.roberta(

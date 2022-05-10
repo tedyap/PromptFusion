@@ -5,11 +5,11 @@ export CUDA_VISIBLE_DEVICES=0
 bs=16
 epoch=30
 psl=128
-lr=3e-2
+lr=1e-4
 dropout=0.1
 
 python3 train_fusion.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
+  --model_name_or_path roberta-base \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -25,4 +25,4 @@ python3 train_fusion.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_scalar > log.txt
+  --fusion_scalar > $DATASET_NAME-roberta-fusion-scalar.txt

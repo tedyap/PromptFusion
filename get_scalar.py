@@ -22,12 +22,10 @@ from training.trainer_base import BaseTrainer
 from training.trainer_exp import ExponentialTrainer
 
 from tasks.utils import *
-from run import train, evaluate
 
 os.environ["WANDB_DISABLED"] = "true"
 
 logger = logging.getLogger(__name__)
-
 
 if __name__ == '__main__':
 
@@ -86,8 +84,12 @@ if __name__ == '__main__':
 
     trainer, predict_dataset = get_trainer(args)
 
-    if training_args.do_train:
-        train(trainer)
+    model = trainer.model
+    for idx, scalar in enumerate(model.weighted_sum.weights):
+        print('weight {}: {}'.format(idx, scalar.item()))
+    # for layer in model.children():
+    #     print(type(layer))
+    #     if isinstance(layer, model.sequence_classification.LinearWeightedSum):
+    #         print(layer.state_dict()['weight'])
+    #         print(layer.state_dict()['bias'])
 
-    if training_args.do_eval:
-        evaluate(trainer)

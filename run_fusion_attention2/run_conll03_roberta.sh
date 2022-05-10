@@ -9,7 +9,7 @@ lr=3e-2
 dropout=0.1
 
 python3 train_fusion.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
+  --model_name_or_path roberta-base \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -25,4 +25,4 @@ python3 train_fusion.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_attention2 > log.txt
+  --fusion_attention2 > logs/$DATASET_NAME-roberta-fusion-attention2.txt

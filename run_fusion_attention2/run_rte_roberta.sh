@@ -3,13 +3,13 @@ export DATASET_NAME=rte
 export CUDA_VISIBLE_DEVICES=0
 
 bs=32
-lr=5e-3
+lr=1e-5
 dropout=0.1
 psl=128
 epoch=100
 
 python3 train_fusion.py \
-  --model_name_or_path checkpoints/$DATASET_NAME-roberta/ \
+  --model_name_or_path roberta-base \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \
@@ -24,4 +24,4 @@ python3 train_fusion.py \
   --seed 11 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_attention2 > log_fusion.txt
+  --fusion_attention2 > logs/$DATASET_NAME-roberta-fusion-attention2.txt

@@ -35,11 +35,10 @@ def get_prompts():
     prompt_file_paths = os.listdir('prompts')
 
     prompts = []
-    for file_path in prompt_file_paths:
+    for idx, file_path in enumerate(prompt_file_paths):
         prompts.append(torch.load('prompts/' + file_path))
+        print(idx, file_path)
 
     prompts = torch.stack(prompts)
-    # p = torch.load('prompts/rte.pt')
-    # prompts = [p,p]
-    print(prompts.shape)
+
     return prompts

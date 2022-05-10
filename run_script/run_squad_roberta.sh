@@ -2,14 +2,14 @@ export TASK_NAME=qa
 export DATASET_NAME=squad
 export CUDA_VISIBLE_DEVICES=0
 
-bs=8
+bs=16
 lr=5e-3
 dropout=0.2
 psl=128
 epoch=30
 
 python3 run.py \
-  --model_name_or_path roberta-large \
+  --model_name_or_path roberta-base \
   --task_name $TASK_NAME \
   --dataset_name $DATASET_NAME \
   --do_train \

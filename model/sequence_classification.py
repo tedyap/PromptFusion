@@ -807,6 +807,9 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param))  # 9860105
 
+        self.prefix_tokens = torch.arange(self.pre_seq_len).long()
+        self.prefix_encoder = PrefixEncoder(config)
+
         self.prompts = get_prompts()
 
     def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):

@@ -883,11 +883,11 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             vp = vp.permute((3, 1, 4, 2, 0))
             print('before kp', kp.shape)
             # permute: pre_seq, batch, n_embed, n_head, task_size ; squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
-            kp, vp = kp.reshape(pre_seq_len*10, prompt_bz, -1), vp.reshape(pre_seq_len*10, prompt_bz, -1)
+            kp, vp = kp.reshape(pre_seq_len*11, prompt_bz, -1), vp.reshape(pre_seq_len*11, prompt_bz, -1)
             kp = torch.repeat_interleave(kp, batch_size, dim=1)
             vp = torch.repeat_interleave(vp, batch_size, dim=1)
 
-            print('kp', kp.shape)
+            print('after kp', kp.shape)
             attn_layer2_output, _ = self.prompt_attn_layer2[layer](attn_layer1_output, kp, vp)
             print('attn2', attn_layer2_output.shape)
 

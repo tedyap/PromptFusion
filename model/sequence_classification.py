@@ -889,7 +889,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             attn_layer2_output, _ = self.prompt_attn_layer2[layer](attn_layer1_output, kp, vp)
             print('attn2', attn_layer2_output.shape)
 
-            new_k, new_v = attn_output, attn_output.detach().clone()
+            new_k, new_v = attn_layer2_output, attn_layer2_output.detach().clone()
 
             new_k = new_k.reshape([batch_size, self.n_head, 1,
                                    -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12

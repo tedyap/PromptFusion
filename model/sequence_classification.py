@@ -845,7 +845,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         batch_size = input_ids.shape[0]
-        print('BATCH SIZE', batch_size)
         # true_past_key_values = self.get_prompt(batch_size=batch_size)
 
         # rm linear weigh sum; adapt
@@ -864,11 +863,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         task_size, n_layer, _, prompt_bz, prompt_n_head, pre_seq_len, n_embed = self.prompts.shape
 
         prompt_init = self.initialize_prompts(batch_size, prompt_n_head, self.atten2_seq_len, n_embed)
-        print('prompt_init', prompt_init.shape)
-        print('raw_embed', raw_embedding.shape)
-
-        print('prompt_init', prompt_init.device)
-        print('raw_embed', raw_embedding.device)
 
         for layer in range(self.n_layer):
             attn_layer1_output, _ = self.prompt_attn_layer1[layer](prompt_init, raw_embedding, raw_embedding)
@@ -882,15 +876,12 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             kp, vp = layer_prompt[:, 0, :, :, :, :], layer_prompt[:, 1, :, :, :, :]
             kp = kp.permute((3, 1, 4, 2, 0))
             vp = vp.permute((3, 1, 4, 2, 0))
-            print('before kp', kp.shape)
             # permute: pre_seq, batch, n_embed, n_head, task_size ; squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
             kp, vp = kp.reshape(pre_seq_len*11, prompt_bz, -1), vp.reshape(pre_seq_len*11, prompt_bz, -1)
             kp = torch.repeat_interleave(kp, batch_size, dim=1)
             vp = torch.repeat_interleave(vp, batch_size, dim=1)
 
-            print('after kp', kp.shape)
             attn_layer2_output, _ = self.prompt_attn_layer2[layer](attn_layer1_output, kp, vp)
-            print('attn2', attn_layer2_output.shape)
 
             new_k, new_v = attn_layer2_output, attn_layer2_output.detach().clone()
 
@@ -907,7 +898,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
             past_key_values.append(new_past_kv)
         past_key_values = tuple(past_key_values)
-        print(f'layer {len(past_key_values)}, layer 1 pask kv shape {past_key_values[0].shape}')
 
         prefix_attention_mask = torch.ones(batch_size, self.atten2_seq_len).to(self.roberta.device)
         attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)

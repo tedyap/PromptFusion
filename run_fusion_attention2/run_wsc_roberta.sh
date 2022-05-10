@@ -24,4 +24,4 @@ python3 train_fusion.py \
   --seed 44 \
   --save_strategy no \
   --evaluation_strategy epoch \
-  --fusion_attention2 > log.txt
+  --fusion_attention2 > logs/$DATASET_NAME-roberta-fusion-attention2.txt

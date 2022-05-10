@@ -363,7 +363,7 @@ class RobertaPrefixFusionScalarModelForQuestionAnswering(RobertaPreTrainedModel)
         self.init_weights()
         self.dropout = torch.nn.Dropout(config.hidden_dropout_prob)
         # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(10)
+        self.weighted_sum = LinearWeightedSum(11)
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
 
         bert_param = 0

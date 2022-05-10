@@ -475,7 +475,7 @@ class RobertaPrefixFusionScalarForSequenceClassification(RobertaPreTrainedModel)
 
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(10)
+        self.weighted_sum = LinearWeightedSum(11)
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():

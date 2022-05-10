@@ -680,6 +680,7 @@ class RobertaPrefixFusionAttention2ModelForQuestionAnswering(RobertaPreTrainedMo
         self.dropout = torch.nn.Dropout(config.hidden_dropout_prob)
         self.classifier = torch.nn.Linear(config.hidden_size, config.num_labels)
         self.init_weights()
+        self.qa_outputs = torch.nn.Linear(config.hidden_size, config.num_labels)
         # self.prompt_len = config.prompt_len
 
         for param in self.roberta.parameters():

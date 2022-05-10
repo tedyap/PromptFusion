@@ -886,6 +886,8 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             kp = torch.repeat_interleave(kp, batch_size, dim=1)
             vp = torch.repeat_interleave(vp, batch_size, dim=1)
 
+            print('kp', kp.shape)
+
             attn_layer2_output, _ = self.prompt_attn_layer2[layer](attn_layer1_output, kp, vp)
             print('attn2', attn_layer2_output.shape)
             raise

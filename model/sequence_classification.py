@@ -858,7 +858,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         ).permute((1, 0, 2))
 
         past_key_values = []
-        print(self.prompts.shape, batch_size)
 
         task_size, n_layer, _, prompt_bz, prompt_n_head, pre_seq_len, n_embed = self.prompts.shape
 
@@ -866,7 +865,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
         for layer in range(self.n_layer):
             attn_layer1_output, _ = self.prompt_attn_layer1[layer](prompt_init, raw_embedding, raw_embedding)
-            print('attn_layer1', attn_layer1_output.shape)
 
             # (32, self.atten2_seq_len, 768)
 

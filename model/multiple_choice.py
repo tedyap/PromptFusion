@@ -816,56 +816,39 @@ class RobertaPrefixFusionAttention2ForMultipleChoice(RobertaPreTrainedModel):
             past_key_values.append(new_past_kv)
         past_key_values = tuple(past_key_values)
 
-        prefix_attention_mask = torch.ones(batch_size*num_choices, self.atten2_seq_len).to(self.roberta.device)
-        attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=1)
+        prefix_attention_mask = torch.ones(batch_size * num_choices, 1).to(self.roberta.device)
+        flat_attention_mask = torch.cat((prefix_attention_mask, flat_attention_mask), dim=1)
 
         outputs = self.roberta(
-            input_ids,
-            attention_mask=attention_mask,
-            token_type_ids=token_type_ids,
-            position_ids=position_ids,
+            flat_input_ids,
+            position_ids=flat_position_ids,
+            token_type_ids=flat_token_type_ids,
+            attention_mask=flat_attention_mask,
             head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
+            inputs_embeds=flat_inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             past_key_values=past_key_values,
         )
-
         pooled_output = outputs[1]
 
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
+        reshaped_logits = logits.view(-1, num_choices)
 
         loss = None
         if labels is not None:
-            if self.config.problem_type is None:
-                if self.num_labels == 1:
-                    self.config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.config.problem_type = "single_label_classification"
-                else:
-                    self.config.problem_type = "multi_label_classification"
+            loss_fct = CrossEntropyLoss()
+            loss = loss_fct(reshaped_logits, labels)
 
-            if self.config.problem_type == "regression":
-                loss_fct = MSELoss()
-                if self.num_labels == 1:
-                    loss = loss_fct(logits.squeeze(), labels.squeeze())
-                else:
-                    loss = loss_fct(logits, labels)
-            elif self.config.problem_type == "single_label_classification":
-                loss_fct = CrossEntropyLoss()
-                loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.config.problem_type == "multi_label_classification":
-                loss_fct = BCEWithLogitsLoss()
-                loss = loss_fct(logits, labels)
         if not return_dict:
-            output = (logits,) + outputs[2:]
+            output = (reshaped_logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return SequenceClassifierOutput(
+        return MultipleChoiceModelOutput(
             loss=loss,
-            logits=logits,
+            logits=reshaped_logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )

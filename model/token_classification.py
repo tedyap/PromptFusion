@@ -735,7 +735,6 @@ class RobertaPrefixFusionAttention2ForTokenClassification(RobertaPreTrainedModel
             kp, vp = layer_prompt[:, 0, :, :, :, :], layer_prompt[:, 1, :, :, :, :]
             kp = kp.permute((3, 1, 4, 2, 0))
             vp = vp.permute((3, 1, 4, 2, 0))
-            # permute: pre_seq, batch, n_embed, n_head, task_size ; squeezed_prompt -> [128, batch_size, embedding_size(64*16)]
             kp, vp = kp.reshape(pre_seq_len*11, prompt_bz, -1), vp.reshape(pre_seq_len*11, prompt_bz, -1)
             kp = torch.repeat_interleave(kp, batch_size, dim=1)
             vp = torch.repeat_interleave(vp, batch_size, dim=1)
@@ -746,14 +745,7 @@ class RobertaPrefixFusionAttention2ForTokenClassification(RobertaPreTrainedModel
 
             new_k = new_k.reshape([self.atten2_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
             new_v = new_v.reshape([self.atten2_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
-
-            # new_k = new_k.reshape([batch_size, self.n_head, 1,
-            #                        -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12
-            # new_v = new_v.reshape([batch_size, self.n_head, 1, -1])  # [:, :self.n_head, :, :]
-            # print(f"newk, newv dim {new_k.shape}")
-            # raise
             new_past_kv = torch.stack([new_k, new_v], dim=0)
-            # stack(new_k, new_v) <- [2, batch_size, 16, 128, 64].permute(...) #at the new first dimension
 
             past_key_values.append(new_past_kv)
         past_key_values = tuple(past_key_values)
@@ -774,38 +766,31 @@ class RobertaPrefixFusionAttention2ForTokenClassification(RobertaPreTrainedModel
             past_key_values=past_key_values,
         )
 
-        pooled_output = outputs[1]
-
-        pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
+        sequence_output = outputs[0]
+        sequence_output = self.dropout(sequence_output)
+        logits = self.classifier(sequence_output)
+        # self.pre_seq should be 1 now
+        attention_mask = attention_mask[:, 1:].contiguous()
 
         loss = None
         if labels is not None:
-            if self.config.problem_type is None:
-                if self.num_labels == 1:
-                    self.config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.config.problem_type = "single_label_classification"
-                else:
-                    self.config.problem_type = "multi_label_classification"
-
-            if self.config.problem_type == "regression":
-                loss_fct = MSELoss()
-                if self.num_labels == 1:
-                    loss = loss_fct(logits.squeeze(), labels.squeeze())
-                else:
-                    loss = loss_fct(logits, labels)
-            elif self.config.problem_type == "single_label_classification":
-                loss_fct = CrossEntropyLoss()
+            loss_fct = CrossEntropyLoss()
+            # Only keep active parts of the loss
+            if attention_mask is not None:
+                active_loss = attention_mask.view(-1) == 1
+                active_logits = logits.view(-1, self.num_labels)
+                active_labels = torch.where(
+                    active_loss, labels.view(-1), torch.tensor(loss_fct.ignore_index).type_as(labels)
+                )
+                loss = loss_fct(active_logits, active_labels)
+            else:
                 loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.config.problem_type == "multi_label_classification":
-                loss_fct = BCEWithLogitsLoss()
-                loss = loss_fct(logits, labels)
+
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return SequenceClassifierOutput(
+        return TokenClassifierOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,

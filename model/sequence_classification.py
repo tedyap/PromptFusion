@@ -807,9 +807,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param))  # 9860105
 
-        self.prefix_tokens = torch.arange(self.pre_seq_len).long()
-        self.prefix_encoder = PrefixEncoder(config)
-
         self.prompts = get_prompts()
 
     def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):
@@ -893,6 +890,11 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             print('attn2', attn_layer2_output.shape)
 
             new_k, new_v = attn_layer2_output, attn_layer2_output.detach().clone()
+
+            new_k = new_k.permute((1, 0, 2)).reshape([batch_size, self.n_head, 1,-1])
+            print('new_k', new_k.shape)
+            raise
+
 
             # new_k = new_k.reshape([batch_size, self.n_head, 1,
             #                        -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12

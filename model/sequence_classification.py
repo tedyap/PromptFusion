@@ -793,7 +793,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
 
         self.prompt_attn_layer2 = nn.ModuleList(
-            [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=self.n_embd * self.n_head, vdim=self.n_embd * self.n_head) for _ in range(self.n_layer)])
+            [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=self.n_embd * self.n_head * 10, vdim=self.n_embd * self.n_head * 10) for _ in range(self.n_layer)])
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -886,19 +886,16 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             kp = torch.repeat_interleave(kp, batch_size, dim=1)
             vp = torch.repeat_interleave(vp, batch_size, dim=1)
 
-            print('kp', kp.shape)
-
             attn_layer2_output, _ = self.prompt_attn_layer2[layer](attn_layer1_output, kp, vp)
             print('attn2', attn_layer2_output.shape)
-            raise
 
             new_k, new_v = attn_output, attn_output.detach().clone()
 
             new_k = new_k.reshape([batch_size, self.n_head, 1,
                                    -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12
             new_v = new_v.reshape([batch_size, self.n_head, 1, -1])  # [:, :self.n_head, :, :]
-            # print(f"newk, newv dim {new_k.shape}")
-
+            print(f"newk, newv dim {new_k.shape}")
+            raise
             new_past_kv = torch.stack([new_k, new_v], dim=0)
             # stack(new_k, new_v) <- [2, batch_size, 16, 128, 64].permute(...) #at the new first dimension
 

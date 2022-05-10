@@ -873,7 +873,6 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
             print(attn_layer1_output.shape)
             # (32, 128, 768)
-            raise
 
             layer_prompt = self.prompts[:, layer, :, :, :, :, :]
             # dim: [task_size, batch_size, n_head, pre_seq, n_embd]

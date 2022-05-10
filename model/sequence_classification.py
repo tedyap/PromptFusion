@@ -793,7 +793,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
 
         self.prompt_attn_layer2 = nn.ModuleList(
-            [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=self.n_embd * self.n_head * 10, vdim=self.n_embd * self.n_head * 10) for _ in range(self.n_layer)])
+            [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -893,8 +893,8 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
             new_k, new_v = attn_layer2_output, attn_layer2_output.detach().clone()
 
-            new_k = new_k.reshape([self.pre_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
-            new_v = new_v.reshape([self.pre_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
+            new_k = new_k.reshape([self.atten2_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
+            new_v = new_v.reshape([self.atten2_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
 
             # new_k = new_k.reshape([batch_size, self.n_head, 1,
             #                        -1])  # [:, :self.n_head, :, :] #pre_seq_len=1, prompt_n_head (now 16) should be n_head = 12

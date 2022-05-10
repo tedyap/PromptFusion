@@ -810,7 +810,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         self.prompts = get_prompts()
 
     def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):
-        return torch.ones(batch_size, pre_seq_len, prompt_n_head * n_embed, device='cuda:0')
+        return torch.ones(pre_seq_len, batch_size, prompt_n_head * n_embed, device='cuda:0')
 
     def get_prompt(self, batch_size):
         prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)
@@ -854,7 +854,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
             input_ids=input_ids,
             position_ids=position_ids,
             token_type_ids=token_type_ids,
-        )
+        ).permute((1, 0, 2))
 
         past_key_values = []
         print(self.prompts.shape, batch_size)

@@ -891,7 +891,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
             new_k, new_v = attn_layer2_output, attn_layer2_output.detach().clone()
 
-            new_k = new_k.permute((1, 0, 2)).reshape([batch_size, self.n_head, 1,-1])
+            new_k = new_k.reshape([self.pre_seq_len, batch_size, self.n_head, self.n_embd]).permute((1, 2, 0, 3))
             print('new_k', new_k.shape)
             raise
 

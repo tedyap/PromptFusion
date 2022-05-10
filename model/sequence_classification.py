@@ -788,14 +788,10 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         self.n_head = config.num_attention_heads
         self.n_embd = config.hidden_size // config.num_attention_heads
         # 9: task size
-        kv_dim = config.hidden_size * 10  # 9216
-        self.prompt_attentions = nn.ModuleList(
-            [nn.MultiheadAttention(config.hidden_size, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
+        kv_dim = config.hidden_size  # 9216
+        self.prompt_attentions_layer1 = nn.ModuleList(
+            [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
-        # self.prefix_encoder = PrefixEncoder(config)
-        self.weighted_sum = LinearWeightedSum(9)
-        self.prompt_attentions = nn.ModuleList(
-            [nn.MultiheadAttention(self.n_embd * self.n_head * 9, 1) for _ in range(self.n_layer)])
 
         bert_param = 0
         for name, param in self.roberta.named_parameters():
@@ -812,6 +808,10 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         self.prompts = get_prompts()
         print('nlayer', self.n_layer)
         print(f'n_head {self.n_head} n_embd {self.n_embd}')
+
+
+    def initialize_prompts(self, batch_size, prompt_n_head, pre_seq_len, n_embed):
+        return torch.ones(batch_size, pre_seq_len, prompt_n_head * n_embed)
 
     def get_prompt(self, batch_size):
         prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)
@@ -862,12 +862,18 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
 
         task_size, n_layer, _, prompt_bz, prompt_n_head, pre_seq_len, n_embed = self.prompts.shape
 
+        prompt_init = self.initialize_prompts(batch_size, prompt_n_head, pre_seq_len, n_embed)
+        print('prompt_init', prompt_init.shape)
+        print('raw_embed', raw_embedding.shape)
+
         for layer in range(self.n_layer):
+            self.prompt_attention_layer1[layer](prompt_init, raw_embedding, raw_embedding)
+            raise
+
             layer_prompt = self.prompts[:, layer, :, :, :, :, :]
             # dim: [task_size, batch_size, n_head, pre_seq, n_embd]
 
             kp, vp = layer_prompt[:, 0, :, :, :, :], layer_prompt[:, 1, :, :, :, :]
-            print(kp.shape, vp.shape)
             kp = kp.permute((3, 1, 4, 2, 0))
             vp = vp.permute((3, 1, 4, 2, 0))
 

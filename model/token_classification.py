@@ -769,8 +769,7 @@ class RobertaPrefixFusionAttention2ForTokenClassification(RobertaPreTrainedModel
         sequence_output = outputs[0]
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
-        # self.pre_seq should be 1 now
-        attention_mask = attention_mask[:, 1:].contiguous()
+        attention_mask = attention_mask[:, self.atten2_seq_len:].contiguous()
 
         loss = None
         if labels is not None:

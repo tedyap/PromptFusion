@@ -789,7 +789,7 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         self.n_embd = config.hidden_size // config.num_attention_heads
         # 9: task size
         kv_dim = config.hidden_size  # 9216
-        self.prompt_attentions_layer1 = nn.ModuleList(
+        self.prompt_attention_layer1 = nn.ModuleList(
             [nn.MultiheadAttention(self.n_embd * self.n_head, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
 

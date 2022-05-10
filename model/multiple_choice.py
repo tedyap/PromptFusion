@@ -816,7 +816,7 @@ class RobertaPrefixFusionAttention2ForMultipleChoice(RobertaPreTrainedModel):
             past_key_values.append(new_past_kv)
         past_key_values = tuple(past_key_values)
 
-        prefix_attention_mask = torch.ones(batch_size * num_choices, 1).to(self.roberta.device)
+        prefix_attention_mask = torch.ones(batch_size * num_choices, self.atten2_seq_len).to(self.roberta.device)
         flat_attention_mask = torch.cat((prefix_attention_mask, flat_attention_mask), dim=1)
 
         outputs = self.roberta(

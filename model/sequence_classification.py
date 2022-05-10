@@ -866,6 +866,9 @@ class RobertaPrefixFusionAttention2ForSequenceClassification(RobertaPreTrainedMo
         print('prompt_init', prompt_init.shape)
         print('raw_embed', raw_embedding.shape)
 
+        print('prompt_init', prompt_init.device)
+        print('raw_embed', raw_embedding.device)
+
         for layer in range(self.n_layer):
             self.prompt_attention_layer1[layer](prompt_init, raw_embedding, raw_embedding)
             raise

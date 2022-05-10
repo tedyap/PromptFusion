@@ -504,7 +504,11 @@ class RobertaPrefixFusionAttention1ModelForQuestionAnswering(RobertaPreTrainedMo
         self.init_weights()
         self.dropout = torch.nn.Dropout(config.hidden_dropout_prob)
         #CHANGED
-        kv_dim = config.hidden_size * 10 #9216
+        self.prompts = get_prompts()
+        n_tasks = self.prompts.shape[0]
+        print('nlayer', self.n_layer)
+        print(f'n_head {self.n_head} n_embd {self.n_embd},ntask  {n_tasks}')
+        kv_dim = config.hidden_size * n_tasks #9216
         self.prompt_attentions = torch.nn.ModuleList([torch.nn.MultiheadAttention(config.hidden_size, 1, kdim=kv_dim, vdim=kv_dim) for _ in range(self.n_layer)])
         self.prefix_tokens = torch.arange(self.pre_seq_len).long()
         
@@ -523,9 +527,6 @@ class RobertaPrefixFusionAttention1ModelForQuestionAnswering(RobertaPreTrainedMo
         total_param = all_param - bert_param
         print('total param is {}'.format(total_param))  # 9860105
         
-        self.prompts = get_prompts()
-        print('nlayer', self.n_layer)
-        print(f'n_head {self.n_head} n_embd {self.n_embd}')
     # def get_prompt(self, batch_size):
         # prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)
         # past_key_values = self.prefix_encoder(prefix_tokens)

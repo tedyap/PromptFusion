@@ -3,7 +3,7 @@ export DATASET_NAME=conll2005
 export CUDA_VISIBLE_DEVICES=0
 
 bs=16
-lr=6e-4
+lr=6e-3
 dropout=0.1
 psl=128
 epoch=15

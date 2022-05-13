@@ -38,27 +38,37 @@ bash run_script/run_rte_roberta.sh
 ```
 
 ### Save Trained Prompts on Disk
-Run save prompt scripts in [save_promt](save_prompt) (e.g., RoBERTa for RTE):
+Run save prompt scripts in [save_prompt](save_prompt) (e.g., RoBERTa for RTE):
 
 ```shell
 bash save_prompt/run_rte_roberta.sh
 ```
 
-### Second Stage: PromptFusion Training
-Run save prompt scripts in [run_fusion](run_fusion_scalar) (e.g., RoBERTa for RTE):
+### Second Stage: PromptFusion Training [Scalar, Data Dependent (Attention1), More Attention (Attention2)]
+Run train PromptFusion scripts in [run_fusion_scalar](run_fusion_scalar) (e.g., RoBERTa for RTE):
 
 ```shell
 bash run_fusion_scalar/run_rte_roberta.sh
 ```
 
 ### Implemented Results
-Currently we have released our reimplementation on following tasks and datasets.
+Released results on Scalar trained with RoBERTa-base
 
-Released results on RoBERTa-large
+|              | BoolQ | COPA | RTE  | WiC  | WSC  | CoNLL03 | CoNLL04 | CoNLL12 | CoNLL05 | SQuAD 1.1 | SQuAD 2.0 |
+|--------------|-------|------|------|------|------|---------|---------|---------|-------------|-----------|-----------|
+| Results      |   0.785|  0.670|0.679 |0.560  |0.635  |0.978     |0.850|0.911     |0.920 |0.840  | 0.705|
 
-|              | BoolQ | COPA | RTE  | WiC  | WSC  | CoNLL03 | CoNLL04 | OntoNotes 5.0 | CoNLL12 | CoNLL05 WSJ | CoNLL05 Brown | SQuAD 1.1 | SQuAD 2.0 |
-|--------------|-------|------|------|------|------|---------|---------|---------------|---------|-------------|---------------|-----------|-----------|
-| Results      |   |  |  |  |  |     |     |           |     |        |       |  | |
-| Total Epochs |    |   |   |    |    |       |      |            |      |         |            |     |        |
-| Best Epoch   |     |    |    |    |     |      |       |            |      |           |            |       |         |
+Released results on Data Dependent trained with RoBERTa-base
 
+|              | BoolQ | COPA | RTE  | WiC  | WSC  | CoNLL03 | CoNLL04 | CoNLL12 | CoNLL05 | SQuAD 1.1 | SQuAD 2.0 |
+|--------------|-------|------|------|------|------|---------|---------|---------|-------------|-----------|-----------|
+| Results      |   0.622|  0.630|0.617 |0.544  |0.635  |0.854 |-|-     |0.410 |-  | 0.505|
+
+Released results on More Attention trained with RoBERTa-base
+
+|              | BoolQ | COPA | RTE  | WiC  | WSC  | CoNLL03 | CoNLL04 | CoNLL12 | CoNLL05 | SQuAD 1.1 | SQuAD 2.0 |
+|--------------|-------|------|------|------|------|---------|---------|---------|-------------|-----------|-----------|
+| Results      |   0.622|  0.620|0.617 |0.555  |0.635  |0.842     |0.768|-     |0.495 |-  | 0.618|
+
+Results for SQuAD 1.1 are missing due to run-time issues and results for CoNLL 04and CoNLL 12 are
+missing due to memory issues.
